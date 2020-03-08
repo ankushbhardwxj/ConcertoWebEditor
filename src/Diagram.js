@@ -70,7 +70,8 @@ class Diagram extends React.Component {
 				{ from: 12, to: 11, relationship: "generalization" },
 				{ from: 13, to: 11, relationship: "generalization" },
 				{ from: 14, to: 13, relationship: "aggregation" }
-			]
+			],
+			modelData : { canRelink: true }
 		}
 	}
 	initDiagram(){
@@ -106,7 +107,7 @@ class Diagram extends React.Component {
       fromSpot: go.Spot.AllSides,
       toSpot: go.Spot.AllSides
     },
-    $(go.Shape, { fill: "lightyellow" }),
+    $(go.Shape, { fill: "lightyellow", fromLinkable:true, toLinkable:true,cursor:'pointer' }),
     $(go.Panel, "Table",
       { defaultRowSeparatorStroke: "black" },
       // header
@@ -170,6 +171,8 @@ class Diagram extends React.Component {
 	diagram.linkTemplate = 
 	$(go.Link,
 		{ routing: go.Link.Orthogonal },
+		new go.Binding('relinkableForm','canReLink').ofModel(),
+		new go.Binding('relinkableTo','canRelink').ofModel(),
 		new go.Binding("isLayoutPositioned", "relationship", convertIsTreeLink),
 		$(go.Shape),
 		$(go.Shape, { scale: 1.3, fill: "white" },
@@ -181,10 +184,24 @@ class Diagram extends React.Component {
 	diagram.model = 
 	$(go.GraphLinksModel,
 	{
+		linkKeyProperty: 'key',
 		copiesArrays: true,
 		copiesArrayObjects: true,
+		makeUniqueKeyFunction: (m: go.Model, data: any) => {
+			let k = data.key || 1;
+			while (m.findNodeDataForKey(k)) k++;
+			data.key = k;
+			return k;
+		},
+		// negative keys for links
+		makeUniqueLinkKeyFunction: (m: go.GraphLinksModel, data: any) => {
+			let k = data.key || -1;
+			while (m.findLinkDataForKey(k)) k--;
+			data.key = k;
+			return k;
+		}
 	});
-	
+
 	return diagram;
   }
   handleModelChange(changes) {
@@ -200,7 +217,8 @@ class Diagram extends React.Component {
             divClassName='diagram-component'
             nodeDataArray={this.state.nodeDataArray}
             linkDataArray={this.state.linkDataArray}
-            onModelChange={this.handleModelChange}
+						onModelChange={this.handleModelChange}
+						modelData={this.state.modelData}
             />
 			</div>
 		)
