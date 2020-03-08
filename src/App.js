@@ -1,8 +1,7 @@
 import React from 'react';
 import './App.css';
 import MonacoEditor from 'react-monaco-editor';
-import Diagram from './Diagram';
-
+import Element from './Element'
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -36,7 +35,7 @@ class App extends React.Component {
           onChange={this.onChange}
           editorDidMount={this.editorDidMount}
         />   
-        <Diagram />
+        <Element />
       </div>
     );
   }
