@@ -87,6 +87,7 @@ class Element extends React.Component<{}, AppState> {
    * @param e a GoJS DiagramEvent
    */
   public handleDiagramEvent(e: go.DiagramEvent) {
+    console.log(this.state.nodeDataArray);
     const name = e.name;
     switch (name) {
       case "ChangedSelection": {
@@ -221,6 +222,7 @@ class Element extends React.Component<{}, AppState> {
    * @param isBlur whether the input event was a blur, indicating the edit is complete
    */
   public handleInputChange(path: string, value: string, isBlur: boolean) {
+    console.log(this.state.nodeDataArray);
     this.setState(
       produce((draft: AppState) => {
         const data = draft.selectedData as go.ObjectData; // only reached if selectedData isn't null
@@ -251,6 +253,7 @@ class Element extends React.Component<{}, AppState> {
    * @param e a change event from the checkbox
    */
   public handleRelinkChange(e: any) {
+    console.log(this.state.nodeDataArray);
     const target = e.target;
     const value = target.checked;
     this.setState({
