@@ -107,19 +107,19 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
 
           ),
           //props
-          $(go.TextBlock, 'Properties', 
-          { row: 1, font: "italic 10pt sans-serif" },
-            new go.Binding("visible", "visible", function (v) { return !v; }).ofObject('color')
-          ),
-          $(go.Panel, "Vertical", { name: "PROPERTIES" },
-          new go.Binding("itemArray", "properties",
-          )
-          ),
-          $("PanelExpanderButton", "PROPERTIES",
-          { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
-          new go.Binding("visible", "Properties", function (arr) { return arr.length > 0; })),
-           )
-      );
+          $(go.TextBlock, "Properties",
+                  { row: 1, font: "italic 10pt sans-serif" },
+                  new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("PROPERTIES")),
+                $(go.Panel, "Vertical", { name: "PROPERTIES" },
+                  new go.Binding("itemArray", "properties"),
+                  {
+                    row: 1, column: 1, margin: 3,alignment: go.Spot.TopRight, visible: false
+                  }
+                ),
+                $("PanelExpanderButton", "PROPERTIES",
+                  { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
+                  new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
+      ));
 
     // relinking depends on modelData
     diagram.linkTemplate =

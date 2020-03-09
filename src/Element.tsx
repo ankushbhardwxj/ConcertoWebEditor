@@ -31,10 +31,16 @@ class Element extends React.Component<{}, AppState> {
     super(props);
     this.state = {
       nodeDataArray: [
-        { key: 0, text: "Alpha", color: "lightblue", loc: "0 0" },
-        { key: 1, text: "Beta", color: "orange", loc: "150 0" },
-        { key: 2, text: "Gamma", color: "lightgreen", loc: "0 150" },
-        { key: 3, text: "Delta", color: "pink", loc: "150 150" }
+        { key: 0, text: "UniqueComponent", properties: [
+          						{ name: "organizer", type: "String", visibility: "public" },
+          						{ name: "balance", type: "Currency", visibility: "public", default: "0" }
+          					], color: "lightblue", loc: "0 0" },
+        { key: 1, text: "RecurringComponent", color: "orange", loc: "190 0" },
+        { key: 2, text: "VAlarm", color: "lightgreen", loc: "0 150" },
+        { key: 3, text: "VFirebusy", properties: [
+          { name: "attendee", type: "String", visibility: "public" },
+          { name: "comment", type: "Currency", visibility: "public", default: "0" }
+        ], color: "pink", loc: "150 150" }
       ],
       linkDataArray: [
         { key: -1, from: 0, to: 1 },
