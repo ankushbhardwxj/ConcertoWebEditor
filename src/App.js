@@ -2,102 +2,41 @@ import React from 'react';
 import './App.css';
 import MonacoEditor from 'react-monaco-editor';
 import Element from './Element'
+import {codeCTO}  from './Code'
 var mappedElements = new Map();
 var classNameProperties = new Map();
+var nameSpaceName = ""
+var importSection = []
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: `namespace org.accordproject.calendar
-
-      import org.accordproject.time.Duration from https://models.accordproject.org/time@0.2.0.cto
-      import org.accordproject.geo.GeoCoordinates from https://models.accordproject.org/geo.cto
-      
-       abstract asset CalendarComponent identified by uid {
-          o String uid
-       }
-      
-      abstract asset UniqueComponent extends CalendarComponent {
-          o String[] attendee optional
-          o String[] comment optional
-          o DateTime dtstamp optional
-          o String organizer optional
-          o String[] requestStatuses optional
-          o String url optional
-      }
-      
-      abstract asset RecurringComponent extends UniqueComponent {
-          o String[] attachements optional
-          o String[] categories optional
-          o String classType optional
-          o String[] contacts optional
-          o DateTime created optional
-          o String description optional
-          o DateTime lastModified optional
-          o Integer priority optional
-          o String[] related optional
-          o Integer sequence optional
-          o String summary optional
-      }
-      
-      asset VAlarm extends CalendarComponent {
-          o String alarmAction optional
-          o String attachment optional
-          o String[] attendees optional
-          o String description optional
-          o Duration duration optional
-          o Integer repeat optional
-          o String summary optional
-      }
-      
-      asset VEvent extends RecurringComponent {
-          o DateTime dtend optional
-          o Duration duration optional
-          o DateTime end optional
-      
-          o Boolean isAllDay optional
-          o GeoCoordinates geo optional
-          o String location optional
-          o String[] resources optional
-          o String transparency optional
-          o Boolean isActive optional
-      }
-      
-      asset VFreebusy extends UniqueComponent {
-          o DateTime dtstart optional
-          o DateTime dtend optional
-          o DateTime start optional
-          o DateTime end optional
-      }
-      
-      asset VJournal extends RecurringComponent {
-      }
-      
-      asset VTodo extends RecurringComponent {
-          o DateTime completed optional
-          o DateTime due optional
-          o Duration duration optional
-          o GeoCoordinates geo optional
-          o String location optional
-          o Integer percentComplete optional
-          o String[] resources optional
-          o String todo optional
-      }`,
+      code: codeCTO,
     }
   }
   //EDitor
   editorDidMount(editor, monaco) {
     editor.focus();
   }
+
   findClassNameAndProp(code){
     console.log("PROPERTIES")
     classNameProperties.clear()
     var codeline = code.split('\n')
     for(let idx in codeline) {
       const lineOfCode = codeline[idx]
-      if(lineOfCode.includes("asset") && lineOfCode.includes("{")) {
+      if(lineOfCode.includes("concept") || 
+        lineOfCode.includes("asset") 
+        && 
+        lineOfCode.includes("{")) {
         const wordOfLine = lineOfCode.trim().split(" ");
-        const classNames = wordOfLine[wordOfLine.indexOf("asset") + 1];
+        let index = 0;
+        if (wordOfLine.includes("asset")) {
+          index = wordOfLine.indexOf("asset")
+        } else if (wordOfLine.includes("concept")) {
+          index = wordOfLine.indexOf("concept")
+        }
+        const classNames = wordOfLine[index + 1];
         var propArr = [];
         while(!codeline[idx].includes("}")){
           if (!codeline[idx].includes("{")){
@@ -113,14 +52,14 @@ class App extends React.Component {
     }
     console.log(classNameProperties)
   }
-  parseCode(code){
-    this.findClassNameAndProp(code);
+
+  findRelationships(code){
     console.log("Relations")
     var codeline = code.split('\n')
     mappedElements.clear()
     for(let idx in codeline) {
       const lineOfCode = codeline[idx];
-      if (lineOfCode.includes("asset")){
+      if (lineOfCode.includes("asset") || lineOfCode.includes("concept")){
         const wordOfLine = lineOfCode.trim().split(" ")
         //find relations & map namewise
         const extendsIdx = wordOfLine.indexOf("extends");
@@ -132,7 +71,40 @@ class App extends React.Component {
       } 
     }
     console.log(mappedElements)
-    
+  }
+
+  findNamespace(code) {
+    console.log("Namespace")
+    var codeline = code.split('\n')
+    for(let idx in codeline) {
+      const lineOfCode = codeline[idx]
+      if (lineOfCode.includes("namespace") && 
+        idx < 100) {
+        const wordOfLine = lineOfCode.trim().split(" ")
+        const index = wordOfLine.indexOf("namespace")
+        nameSpaceName = wordOfLine[index + 1]
+        console.log(nameSpaceName)
+      }
+    }
+  }
+  findImports(code){
+    console.log("Imports")
+    var codeline = code.split('\n')
+    for(let idx in codeline) {
+      const lineOfCode = codeline[idx]
+      if (lineOfCode.includes("import")) {
+        const wordOfLine = lineOfCode.trim().split(" ")
+        const index = wordOfLine.indexOf("import")
+        importSection.push(wordOfLine[index + 1])
+      }
+    }
+    console.log(importSection)
+  }
+  parseCode(code){
+    this.findImports(code);
+    this.findNamespace(code);
+    this.findClassNameAndProp(code);
+    this.findRelationships(code);
   }
   onChange(newValue, e) {
     //  console.log('onChange', newValue, e);
