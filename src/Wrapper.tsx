@@ -93,16 +93,32 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
         new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, 'RoundedRectangle',
           {
-            name: 'SHAPE', fill: 'white', strokeWidth: 0,
+            name: 'SHAPE', fill: 'lightyellow', strokeWidth: 0,
             // set the port properties:
             portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer'
           },
           // Shape.fill is bound to Node.data.color
-          new go.Binding('fill', 'color')),
-        $(go.TextBlock,
+          new go.Binding('fill', 'lightyellow')),
+        $(go.Panel, 'Table', {defaultRowSeparatorStroke:'black'},
+         //header
+         $(go.TextBlock,
           { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
           new go.Binding('text').makeTwoWay()
-        )
+
+          ),
+          //props
+          $(go.TextBlock, 'Properties', 
+          { row: 1, font: "italic 10pt sans-serif" },
+            new go.Binding("visible", "visible", function (v) { return !v; }).ofObject('color')
+          ),
+          $(go.Panel, "Vertical", { name: "PROPERTIES" },
+          new go.Binding("itemArray", "properties",
+          )
+          ),
+          $("PanelExpanderButton", "PROPERTIES",
+          { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
+          new go.Binding("visible", "Properties", function (arr) { return arr.length > 0; })),
+           )
       );
 
     // relinking depends on modelData

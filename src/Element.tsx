@@ -47,7 +47,7 @@ class Element extends React.Component<{}, AppState> {
         canRelink: true
       },
       selectedData: null,
-      skipsDiagramUpdate: false
+      skipsDiagramUpdate: false,
     };
     // init maps
     this.mapNodeKeyIdx = new Map<go.Key, number>();

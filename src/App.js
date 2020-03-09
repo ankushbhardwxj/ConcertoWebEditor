@@ -91,6 +91,7 @@ class App extends React.Component {
   }
   findClassNameAndProp(code){
     console.log("PROPERTIES")
+    classNameProperties.clear()
     var codeline = code.split('\n')
     for(let idx in codeline) {
       const lineOfCode = codeline[idx]
@@ -116,6 +117,7 @@ class App extends React.Component {
     this.findClassNameAndProp(code);
     console.log("Relations")
     var codeline = code.split('\n')
+    mappedElements.clear()
     for(let idx in codeline) {
       const lineOfCode = codeline[idx];
       if (lineOfCode.includes("asset")){
@@ -125,15 +127,12 @@ class App extends React.Component {
         if (extendsIdx >= 0) {
           const fromClass = wordOfLine[extendsIdx + 1]
           const toClass = wordOfLine[extendsIdx - 1]
-          //check if fromClass or toClass already exists, else add to map
-          // if (!this.checkForMapValues(fromClass))
           mappedElements.set(mappedElements.size + 1, {fromClass, toClass})
-          // if (!this.checkForMapValues(toClass))
-          // mappedElements.set(mappedElements.size + 1, {fromClass, toClass})
         }
       } 
     }
     console.log(mappedElements)
+    
   }
   onChange(newValue, e) {
     //  console.log('onChange', newValue, e);
@@ -143,7 +142,9 @@ class App extends React.Component {
     })
     this.parseCode(this.state.code)
   }
-  
+  componentDidMount(){
+    this.parseCode(this.state.code)
+  }
   render() {
     const code = this.state.code;
     const options = {
@@ -161,7 +162,9 @@ class App extends React.Component {
           onChange={this.onChange.bind(this)}
           editorDidMount={this.editorDidMount}
         />   
-        <Element />
+        <Element 
+          classDataArray={classNameProperties}
+        />
       </div>
     );
   }
