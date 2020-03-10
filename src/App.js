@@ -5,6 +5,7 @@ import Element from './Element'
 import {codeCTO}  from './Code'
 var mappedElements = new Map();
 var classNameProperties = new Map();
+var classNamePropertiesArr = []
 var nameSpaceName = ""
 var importSection = []
 var nodeData = []  //this will be passed as prop to form as state
@@ -103,16 +104,16 @@ class App extends React.Component {
   }
   createNodeArrJSON(){
     let someArr = []
-    let obj = {key: null, name: null, properties: []}
+    let obj = {key: null, text: null, properties: []}
     let idx = 0;
     classNameProperties.forEach(function(val,asd){
       idx++;
-      let someObj = {key: idx, name: asd, properties: val}
+      let someObj = {key: idx, text: asd, properties: val}
       Object.assign(obj,someObj)
       someArr.push(someObj)
     })
-    classNameProperties = someArr
-    console.log((classNameProperties))
+    classNamePropertiesArr = someArr
+    console.log((JSON.stringify(classNamePropertiesArr).replace(/"([^"]+)":/g, '$1:')))
   }
   parseCode(code){
     this.findImports(code);

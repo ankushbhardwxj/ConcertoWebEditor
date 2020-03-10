@@ -61,7 +61,7 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
         {
           'undoManager.isEnabled': true,  // must be set to allow for model change listening
           // 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
-          'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
+          'clickCreatingTool.archetypeNodeData': { name: 'new node', color: 'lightblue' },
           draggingTool: new GuidedDraggingTool(),  // defined in GuidedDraggingTool.ts
           'draggingTool.horizontalGuidelineColor': 'blue',
           'draggingTool.verticalGuidelineColor': 'blue',
@@ -101,7 +101,7 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
           new go.Binding('fill', 'lightyellow')),
         $(go.Panel, 'Table', {defaultRowSeparatorStroke:'black'},
          //header
-         $(go.TextBlock,
+         $(go.TextBlock, 
           { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
           new go.Binding('text').makeTwoWay()
 
@@ -113,11 +113,11 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
                 $(go.Panel, "Vertical", { name: "PROPERTIES" },
                   new go.Binding("itemArray", "properties"),
                   {
-                    row: 1, column: 1, margin: 3,alignment: go.Spot.TopRight, visible: false
+                    row: 1, margin: 3, defaultAlignment: go.Spot.TopRight, visible: false
                   }
                 ),
                 $("PanelExpanderButton", "PROPERTIES",
-                  { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
+                  { row: 1, margin: 3,column: 1, defaultAlignment: go.Spot.TopRight, visible: false},
                   new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
       ));
 
