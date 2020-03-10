@@ -94,6 +94,7 @@ class Element extends React.Component<{}, AppState> {
    */
   public handleDiagramEvent(e: go.DiagramEvent) {
     console.log(this.state.nodeDataArray);
+    console.log(this.state.linkDataArray)
     const name = e.name;
     switch (name) {
       case "ChangedSelection": {

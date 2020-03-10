@@ -7,6 +7,8 @@ var mappedElements = new Map();
 var classNameProperties = new Map();
 var nameSpaceName = ""
 var importSection = []
+var nodeData = []  //this will be passed as prop to form as state
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -18,7 +20,6 @@ class App extends React.Component {
   editorDidMount(editor, monaco) {
     editor.focus();
   }
-
   findClassNameAndProp(code){
     console.log("PROPERTIES")
     classNameProperties.clear()
@@ -100,6 +101,19 @@ class App extends React.Component {
     }
     console.log(importSection)
   }
+  createNodeArrJSON(){
+    let someArr = []
+    let obj = {key: null, name: null, properties: []}
+    let idx = 0;
+    classNameProperties.forEach(function(val,asd){
+      idx++;
+      let someObj = {key: idx, name: asd, properties: val}
+      Object.assign(obj,someObj)
+      someArr.push(someObj)
+    })
+    classNameProperties = someArr
+    console.log((classNameProperties))
+  }
   parseCode(code){
     this.findImports(code);
     this.findNamespace(code);
@@ -113,9 +127,11 @@ class App extends React.Component {
       code: newValue
     })
     this.parseCode(this.state.code)
+    this.createNodeArrJSON();
   }
   componentDidMount(){
     this.parseCode(this.state.code)
+    
   }
   render() {
     const code = this.state.code;
