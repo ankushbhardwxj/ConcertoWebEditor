@@ -8,13 +8,16 @@ var classNameProperties = new Map();
 var classNamePropertiesArr = []
 var nameSpaceName = ""
 var importSection = []
-var nodeData = []  //this will be passed as prop to form as state
+// var nodeData = []  //this will be passed as prop to form as state
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       code: codeCTO,
+      nodeData: [],
+      nodeDataObj : {},
+      hasError : false
     }
   }
   //EDitor
@@ -22,7 +25,7 @@ class App extends React.Component {
     editor.focus();
   }
   findClassNameAndProp(code){
-    console.log("PROPERTIES")
+    // console.log("PROPERTIES")
     classNameProperties.clear()
     var codeline = code.split('\n')
     for(let idx in codeline) {
@@ -52,11 +55,11 @@ class App extends React.Component {
         }
       }
     }
-    console.log(classNameProperties)
+    // console.log(classNameProperties)
   }
 
   findRelationships(code){
-    console.log("Relations")
+    // console.log("Relations")
     var codeline = code.split('\n')
     mappedElements.clear()
     for(let idx in codeline) {
@@ -72,11 +75,11 @@ class App extends React.Component {
         }
       } 
     }
-    console.log(mappedElements)
+    // console.log(mappedElements)
   }
 
   findNamespace(code) {
-    console.log("Namespace")
+    // console.log("Namespace")
     var codeline = code.split('\n')
     for(let idx in codeline) {
       const lineOfCode = codeline[idx]
@@ -85,12 +88,12 @@ class App extends React.Component {
         const wordOfLine = lineOfCode.trim().split(" ")
         const index = wordOfLine.indexOf("namespace")
         nameSpaceName = wordOfLine[index + 1]
-        console.log(nameSpaceName)
+        // console.log(nameSpaceName)
       }
     }
   }
   findImports(code){
-    console.log("Imports")
+    // console.log("Imports")
     var codeline = code.split('\n')
     for(let idx in codeline) {
       const lineOfCode = codeline[idx]
@@ -100,7 +103,7 @@ class App extends React.Component {
         importSection.push(wordOfLine[index + 1])
       }
     }
-    console.log(importSection)
+    // console.log(importSection)
   }
   createNodeArrJSON(){
     let someArr = []
@@ -112,33 +115,63 @@ class App extends React.Component {
       Object.assign(obj,someObj)
       someArr.push(someObj)
     })
-    classNamePropertiesArr = someArr
-    console.log((JSON.stringify(classNamePropertiesArr).replace(/"([^"]+)":/g, '$1:')))
+    let longJSON = ''
+    // console.log((JSON.stringify(classNamePropertiesArr).replace(/"([^"]+)":/g, '$1:')))
+    longJSON = JSON.stringify(someArr).replace(/"([^"]+)":/g, '$1:') // .substring(1, longJSON.length-1)
+    // this.state.nodeData = longJSON
+    this.state.nodeData.push(longJSON)
+    var JSONobj = eval(this.state.nodeData[0])
+    // console.log(JSONobj)
+    this.state.nodeDataObj = JSONobj
+    // console.log(this.state.nodeDataObj, typeof(this.state.nodeDataObj))
   }
   parseCode(code){
-    this.findImports(code);
-    this.findNamespace(code);
-    this.findClassNameAndProp(code);
-    this.findRelationships(code);
+    try {
+      this.state.nodeData.pop()
+      this.findImports(code);
+      this.findNamespace(code);
+      this.findClassNameAndProp(code);
+      this.findRelationships(code);
+      this.createNodeArrJSON();
+    } catch(e) {
+      // alert(e);
+      console.log("ERROR !")
+    }
+    
+
   }
   onChange(newValue, e) {
     //  console.log('onChange', newValue, e);
     //  console.log(newValue);
-    this.setState({
-      code: newValue
-    })
-    this.parseCode(this.state.code)
-    this.createNodeArrJSON();
-  }
-  componentDidMount(){
-    this.parseCode(this.state.code)
+    try {
+      this.setState({
+        code: newValue
+      })
+      console.log(this.state.code)
+      this.parseCode(this.state.code)
+    } catch(e) {
+      alert(e)
+    }
     
   }
+  componentDidMount(){
+    try{
+      this.parseCode(this.state.code)
+    } catch(e) {
+      alert(e);
+    }
+  } 
+  componentDidCatch(error, info) {
+    this.setState({ hasError : true });
+    alert(error, info)
+  }
+
   render() {
     const code = this.state.code;
     const options = {
       selectOnLineNumbers: true
     };
+    // console.log(this.state.nodeData)
     return (
       <div style={{display:"grid", grid:"0px / auto auto"}}>
         <MonacoEditor
@@ -152,7 +185,7 @@ class App extends React.Component {
           editorDidMount={this.editorDidMount}
         />   
         <Element 
-          classDataArray={classNameProperties}
+          classDataArray={this.state.nodeDataObj}
         />
       </div>
     );

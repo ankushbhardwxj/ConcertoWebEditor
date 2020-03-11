@@ -1,7 +1,6 @@
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import * as React from 'react';
-
 import GuidedDraggingTool  from './GuidedDraggingTool';
 
 interface DiagramProps {
@@ -67,6 +66,14 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
           'draggingTool.verticalGuidelineColor': 'blue',
           'draggingTool.centerGuidelineColor': 'green',
           'draggingTool.guidelineWidth': 1,
+          layout: $(go.TreeLayout,{
+            angle: 90,
+            path: go.TreeLayout.PathSource,  // links go from child to parent
+            setsPortSpot: false,  // keep Spot.AllSides for link connection spot
+            setsChildPortSpot: false,  // keep Spot.AllSides
+            // nodes not connected by "generalization" links are laid out horizontally
+            arrangement: go.TreeLayout.ArrangementHorizontal
+          }),
           model: $(go.GraphLinksModel,
             {
               linkKeyProperty: 'key',  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel

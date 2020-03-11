@@ -5,6 +5,7 @@
 import * as go from "gojs";
 import { produce } from "immer";
 import * as React from "react";
+import classNamePropertiesArr from './App'
 
 import Wrapper from "./Wrapper"
 import "./App.css";
@@ -21,19 +22,18 @@ interface AppState {
   selectedData: go.ObjectData | null;
   skipsDiagramUpdate: boolean;
 }
-
 interface ElementProps {
   classDataArray: Array<go.ObjectData>;
 }
 
-class Element extends React.Component<{}, AppState> {
+class Element extends React.Component<ElementProps, AppState> {
   // Maps to store key -> arr index for quick lookups
   private mapNodeKeyIdx: Map<go.Key, number>;
   private mapLinkKeyIdx: Map<go.Key, number>;
   constructor(props: ElementProps) {
     super(props);
     this.state = {
-      nodeDataArray:[{key:1,text:"DecoratorString",properties:["o String value"]},{key:2,text:"DecoratorNumber",properties:["o Double value"]},{key:3,text:"DecoratorBoolean",properties:["o Boolean value"]},{key:4,text:"TypeIdentifier",properties:["o String fullyQualifiedName"]},{key:5,text:"DecoratorIdentifier",properties:["o TypeIdentifier identifier","o Boolean isArray default=false"]},{key:6,text:"Decorator",properties:["o String name","o DecoratorLiteral[] arguments optional"]},{key:7,text:"ClassDeclaration",properties:["o Decorator[] decorators optional","o Boolean isAbstract default=false","o String identifier","o String identifiedByField optional","o TypeIdentifier superType optional"]},{key:8,text:"EnumDeclaration",properties:[]},{key:9,text:"StringDefault",properties:["o String value"]},{key:10,text:"BooleanDefault",properties:["o Boolean value"]},{key:11,text:"IntegerDefault",properties:["o Integer value"]},{key:12,text:"RealDefault",properties:["o Double value"]},{key:13,text:"FieldDeclaration",properties:["o String name","o Boolean isArray optional","o Boolean isOptional optional","o Decorator[] decorators optional"]},{key:14,text:"ObjectFieldDeclaration",properties:["o StringDefault defaultValue optional","o TypeIdentifier type"]},{key:15,text:"BooleanFieldDeclaration",properties:["o BooleanDefault defaultValue optional"]},{key:16,text:"StringFieldDeclaration",properties:["o StringDefault defaultValue optional","o StringRegexValidator validator optional"]},{key:17,text:"StringRegexValidator",properties:["o String regex"]},{key:18,text:"RealDomainValidator",properties:["o Double lower optional","o Double upper optional"]}],
+      nodeDataArray: [],
       linkDataArray: [
         { key: -1, from: 0, to: 1 },
         { key: -2, from: 0, to: 2 },
@@ -85,7 +85,6 @@ class Element extends React.Component<{}, AppState> {
    * @param e a GoJS DiagramEvent
    */
   public handleDiagramEvent(e: go.DiagramEvent) {
-    console.log(this.state.nodeDataArray);
     console.log(this.state.linkDataArray)
     const name = e.name;
     switch (name) {
@@ -221,7 +220,7 @@ class Element extends React.Component<{}, AppState> {
    * @param isBlur whether the input event was a blur, indicating the edit is complete
    */
   public handleInputChange(path: string, value: string, isBlur: boolean) {
-    console.log(this.state.nodeDataArray);
+    // console.log(this.state.nodeDataArray);
     this.setState(
       produce((draft: AppState) => {
         const data = draft.selectedData as go.ObjectData; // only reached if selectedData isn't null
@@ -265,7 +264,7 @@ class Element extends React.Component<{}, AppState> {
     return (
       <div>
         <Wrapper
-          nodeDataArray={this.state.nodeDataArray}
+          nodeDataArray={this.props.classDataArray}
           linkDataArray={this.state.linkDataArray}
           modelData={this.state.modelData}
           skipsDiagramUpdate={this.state.skipsDiagramUpdate}
