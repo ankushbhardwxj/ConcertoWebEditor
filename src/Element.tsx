@@ -24,6 +24,7 @@ interface AppState {
 }
 interface ElementProps {
   classDataArray: Array<go.ObjectData>;
+  linkDataArr: Array<go.ObjectData>;
 }
 
 class Element extends React.Component<ElementProps, AppState> {
@@ -255,11 +256,12 @@ class Element extends React.Component<ElementProps, AppState> {
   }
 
   public render() {
+    console.log(this.props.linkDataArr)
      return (
       <div>
         <Wrapper
           nodeDataArray={this.props.classDataArray}
-          linkDataArray={this.state.linkDataArray}
+          linkDataArray={this.props.linkDataArr}
           modelData={this.state.modelData}
           skipsDiagramUpdate={this.state.skipsDiagramUpdate}
           onDiagramEvent={this.handleDiagramEvent}

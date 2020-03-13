@@ -47,12 +47,7 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
     }
   }
 
-  /**
-   * Diagram initialization method, which is passed to the ReactDiagram component.
-   * This method is responsible for making the diagram and initializing the model, any templates,
-   * and maybe doing other initialization tasks like customizing tools.
-   * The model's data should not be set here, as the ReactDiagram component handles that.
-   */
+  // description of the diagram in GO-JS
   private initDiagram(): go.Diagram {
     const $ = go.GraphObject.make;
     const diagram =
@@ -141,8 +136,6 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
   }
 
   public render() {
-    // console.log((this.props.nodeDataArray.toString()))
-
     return (
       <ReactDiagram
         ref={this.diagramRef}

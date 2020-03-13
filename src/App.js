@@ -5,17 +5,15 @@ import Element from './Element'
 import { Provider } from "react-redux"
 import store from './store'
 import {codeCTO}  from './Code'
-import {connect} from 'react-redux'
-import {SEND_CODE_UPDATE,SEND_GO_UPDATE} from "./actions/types"
 
-// var nodeData = []  //this will be passed as prop to form as state
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       code: codeCTO,
-      model: {},
-      hasError : false
+      model: [],
+      hasError : false,
+      relations: []
     }
   }
   //EDitor
@@ -23,20 +21,37 @@ class App extends React.Component {
     editor.focus();
   }
 
+  generateRelations(model){
+    const relationArr = []
+    const concepts = model.map(r => {
+      if(r.superType != null){
+        const to = r.name
+        const from = r.superType
+        const relation = {to, from}
+        relationArr.push(relation)
+      }
+    })
+    this.setState({
+      relations: relationArr
+    })
+    // console.log(this.state.relations)
+  }
+
   parseCode(code){
     const ModelManager = require('@accordproject/concerto-core').ModelManager
     const modelManager = new ModelManager()
-    modelManager.addModelFile(code,'');
+    modelManager.addModelFile(code);
     const models = modelManager.getModels() //gets the model name
     const namespaces = modelManager.getNamespaces() //gets the namespace name
     const concept = modelManager.getConceptDeclarations() //gives a concepts class
     const assets = modelManager.getAssetDeclarations() //gives an asset class 
+    this.generateRelations(concept)
     this.setState({
-      model : concept 
+      model : concept,
     })  
     console.log(this.state.model)
+    // console.log(concept.map(s => console.log( s,s.name, s.properties)))
   }
-
   onChange(newValue, e) {
     try{
       this.setState({
@@ -47,7 +62,6 @@ class App extends React.Component {
       console.log("ERROR !")
     }
   }
-
   componentDidMount(){
     try{
       // console.log(this.state.code)
@@ -62,6 +76,7 @@ class App extends React.Component {
     const options = {
       selectOnLineNumbers: true
     };
+    console.log(this.state.relations)
     return (
       <Provider store={store}>
         <div style={{display:"grid", grid:"0px / auto auto"}}>
@@ -77,6 +92,7 @@ class App extends React.Component {
           />   
           <Element 
             classDataArray={this.state.model}
+            linkDataArr={this.state.relations}
           />
         </div>
       </Provider>
