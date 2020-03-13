@@ -110,22 +110,22 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
          //header
          $(go.TextBlock, 
           { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
-          new go.Binding('text').makeTwoWay()
-
+            new go.Binding('text','name').makeTwoWay()
           ),
           //props
           $(go.TextBlock, "Properties",
                   { row: 1, font: "italic 10pt sans-serif" },
                   new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("PROPERTIES")),
                 $(go.Panel, "Vertical", { name: "PROPERTIES" },
-                  new go.Binding("itemArray", "properties"),
+                  new go.Binding("itemArray", "properties").makeTwoWay(),
                   {
                     row: 1, margin: 3, defaultAlignment: go.Spot.TopRight, visible: false
                   }
                 ),
                 $("PanelExpanderButton", "PROPERTIES",
                   { row: 1, margin: 3,column: 1, defaultAlignment: go.Spot.TopRight, visible: false},
-                  new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
+                  new go.Binding("visible", "properties", function (arr) {
+                    return arr.length > 0; })),
       ));
 
     // relinking depends on modelData
@@ -141,6 +141,8 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
   }
 
   public render() {
+    // console.log((this.props.nodeDataArray.toString()))
+
     return (
       <ReactDiagram
         ref={this.diagramRef}

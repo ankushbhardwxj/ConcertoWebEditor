@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@accordproject/concerto-core": "^0.82.7",
     "@projectstorm/react-diagrams": "^6.0.1-beta.7",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -17,7 +18,10 @@
     "react-dom": "^16.12.0",
     "react-monaco-editor": "^0.34.0",
     "react-nomnoml": "0.0.2",
+    "react-redux": "^7.2.0",
     "react-scripts": "3.4.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
     "typescript": "^3.8.3"
   },
   "scripts": {

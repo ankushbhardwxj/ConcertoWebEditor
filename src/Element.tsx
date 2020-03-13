@@ -34,13 +34,7 @@ class Element extends React.Component<ElementProps, AppState> {
     super(props);
     this.state = {
       nodeDataArray: [],
-      linkDataArray: [
-        { key: -1, from: 0, to: 1 },
-        { key: -2, from: 0, to: 2 },
-        { key: -3, from: 1, to: 1 },
-        { key: -4, from: 2, to: 3 },
-        { key: -5, from: 3, to: 0 }
-      ],
+      linkDataArray: [],
       modelData: {
         canRelink: true
       },
@@ -261,7 +255,7 @@ class Element extends React.Component<ElementProps, AppState> {
   }
 
   public render() {
-    return (
+     return (
       <div>
         <Wrapper
           nodeDataArray={this.props.classDataArray}
