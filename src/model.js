@@ -1,5 +1,5 @@
-const ModelManager = require('@accordproject/concerto-core').ModelManager
-export var modelManager = new ModelManager()
+const ModelM = require('@accordproject/concerto-core').ModelManager
+export var modelManager = new ModelM()
 export var nodeDataArray = []
 export var linkDataArray = []
 

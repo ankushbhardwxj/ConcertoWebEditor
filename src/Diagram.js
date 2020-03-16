@@ -57,7 +57,7 @@ class Diagram extends React.Component {
                   { row: 1, margin: 3,column: 1, defaultAlignment: go.Spot.TopRight, visible: false},
                   new go.Binding("visible", "properties", function (arr) {
                     return arr.length > 0; })),
-      ));
+             ))
 
     // relinking depends on modelData
     diagram.linkTemplate =
