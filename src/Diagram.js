@@ -70,9 +70,8 @@ class Diagram extends React.Component {
 
     return diagram;
   }
-
-  componentDidMount() {
- 
+  handleModelChange() {
+    console.log("Handle this model")
   }
   render() {
     return(

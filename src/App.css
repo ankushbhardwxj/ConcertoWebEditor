@@ -28,10 +28,10 @@
   color: #61dafb;
 }
 .diagram-component {
-  width: 600px;
+  width: 830px;
   height: 750px;
   border: solid 1px black;
-  background-color: white;
+  background-color:white;
 }
 
 @keyframes App-logo-spin {

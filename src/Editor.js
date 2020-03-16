@@ -5,7 +5,6 @@ import { codeCTO } from './Code'
 
 
 class CodeEditor extends React.Component {
- 
   editorDidMount(editor, monaco) {
     editor.focus();
   }

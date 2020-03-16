@@ -11,6 +11,8 @@ export function generateModelFromCode(model) {
   linkDataArray = []
   generateNodeDataArray()
   generateLinkDataArray()
+  console.log(nodeDataArray)
+  console.log(linkDataArray)
 }
   // key - name of class
   // type - type of declaration
