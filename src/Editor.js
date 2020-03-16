@@ -5,46 +5,10 @@ import { codeCTO } from './Code'
 
 
 class CodeEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      code: codeCTO
-    }
-  }
-
+ 
   editorDidMount(editor, monaco) {
     editor.focus();
   }
-    //EDitor
-  parseCode(code){
-    const ModelManager = require('@accordproject/concerto-core').ModelManager
-    const modelManager = new ModelManager()
-    modelManager.addModelFile(code);
-    const modelFile = modelManager.getModelFiles()
-    // console.log(modelManager.modelFiles['concerto.metamodel'].declarations)
-    generateModelFromCode(modelFile)
-  }
-  
-  onChange(newValue, e) {
-    console.clear()
-    try {
-      this.parseCode(newValue)
-      this.setState({
-        code: newValue
-      })
-    } catch(e) {
-      console.log("ERROR!");
-    }
-  }
-  
-  componentDidMount() {
-    try {
-      this.parseCode(this.state.code)
-    }catch(e) {
-      console.log("ERROR!");
-    }
-  }
-  
   render(){
     const options = {
       selectOnLineNumbers: true
@@ -55,9 +19,9 @@ class CodeEditor extends React.Component {
         height="752"
         language="javascript"
         theme="vs-dark"
-        value={this.state.code}
+        value={this.props.code}
         options={options}
-        onChange={this.onChange.bind(this)}
+        onChange={this.props.onChange}
         editorDidMount={this.editorDidMount}
       />
     )

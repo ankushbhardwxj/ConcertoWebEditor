@@ -6,13 +6,6 @@ import {generateModelFromCode} from './model'
 import './App.css'
 
 class Diagram extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      nodeDataArray : [],
-      linkDataArray : []
-    }
-  }
   initDiagram() {
     const $ = go.GraphObject.make
     const diagram = $(go.Diagram, {
@@ -86,8 +79,8 @@ class Diagram extends React.Component {
       <ReactDiagram
         divClassName="diagram-component"
         initDiagram={this.initDiagram}
-        nodeDataArray={null}
-        linkDataArray={null}
+        nodeDataArray={this.props.nodeData}
+        linkDataArray={this.props.linkData}
         onModelChange={this.handleModelChange} 
       />
     )

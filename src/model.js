@@ -22,7 +22,7 @@ export function generateNodeDataArray() {
     nodeObj[idx] = {key: res.name, type: res.ast.type, properties: res.properties}
     nodeDataArray.push(nodeObj[idx])
   })
-  console.log(nodeDataArray)
+  // console.log(nodeDataArray)
   return nodeDataArray
 }
 // generates relationship array
@@ -38,7 +38,7 @@ export function generateLinkDataArray() {
     }
   })
   linkDataArray.push(linkObj)
-  console.log(linkDataArray)
+  // console.log(linkDataArray)
   return linkDataArray
 }
 
