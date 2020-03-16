@@ -6,7 +6,7 @@ import * as go from "gojs";
 import { produce } from "immer";
 import * as React from "react";
 import classNamePropertiesArr from './App'
-
+import { nodeDataArray, linkDataArray } from './model'
 import Wrapper from "./Wrapper"
 import "./App.css";
 
@@ -34,8 +34,8 @@ class Element extends React.Component<ElementProps, AppState> {
   constructor(props: ElementProps) {
     super(props);
     this.state = {
-      nodeDataArray: [],
-      linkDataArray: [],
+      nodeDataArray: nodeDataArray,
+      linkDataArray: linkDataArray,
       modelData: {
         canRelink: true
       },
@@ -259,14 +259,14 @@ class Element extends React.Component<ElementProps, AppState> {
     console.log(this.props.linkDataArr)
      return (
       <div>
-        <Wrapper
-          nodeDataArray={this.props.classDataArray}
-          linkDataArray={this.props.linkDataArr}
+        {/* <Wrapper
+          nodeDataArray={this.state.nodeDataArray}
+          linkDataArray={this.state.linkDataArray}
           modelData={this.state.modelData}
           skipsDiagramUpdate={this.state.skipsDiagramUpdate}
           onDiagramEvent={this.handleDiagramEvent}
           onModelChange={this.handleModelChange}
-        />
+        /> */}
       </div>
     );
   }

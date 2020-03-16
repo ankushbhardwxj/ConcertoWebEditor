@@ -4,12 +4,13 @@ import * as React from 'react';
 import GuidedDraggingTool  from './GuidedDraggingTool';
 
 interface DiagramProps {
-  nodeDataArray: Array<go.ObjectData>;
-  linkDataArray: Array<go.ObjectData>;
+  model: Array<go.ObjectData>;
   modelData: go.ObjectData;
   skipsDiagramUpdate: boolean;
   onDiagramEvent: (e: go.DiagramEvent) => void;
   onModelChange: (e: go.IncrementalData) => void;
+  nodeDataArray: Array<go.ObjectData>,
+  linkDataArray: Array<go.ObjectData>
 }
 
 export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
@@ -73,19 +74,19 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
             {
               linkKeyProperty: 'key',  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
               // positive keys for nodes
-              makeUniqueKeyFunction: (m: go.Model, data: any) => {
-                let k = data.key || 1;
-                while (m.findNodeDataForKey(k)) k++;
-                data.key = k;
-                return k;
-              },
-              // negative keys for links
-              makeUniqueLinkKeyFunction: (m: go.GraphLinksModel, data: any) => {
-                let k = data.key || -1;
-                while (m.findLinkDataForKey(k)) k--;
-                data.key = k;
-                return k;
-              }
+              // makeUniqueKeyFunction: (m: go.Model, data: any) => {
+              //   let k = data.key || 1;
+              //   while (m.findNodeDataForKey(k)) k++;
+              //   data.key = k;
+              //   return k;
+              // },
+              // // negative keys for links
+              // makeUniqueLinkKeyFunction: (m: go.GraphLinksModel, data: any) => {
+              //   let k = data.key || -1;
+              //   while (m.findLinkDataForKey(k)) k--;
+              //   data.key = k;
+              //   return k;
+              // }
             })
         });
 
@@ -105,7 +106,7 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
          //header
          $(go.TextBlock, 
           { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
-            new go.Binding('text','name').makeTwoWay()
+            new go.Binding('text',"'modelFiles['concerto.metamodel'].declarations.name'").makeTwoWay()
           ),
           //props
           $(go.TextBlock, "Properties",
@@ -141,8 +142,7 @@ export default class DiagramWrapper extends React.Component<DiagramProps, {}> {
         ref={this.diagramRef}
         divClassName='diagram-component'
         initDiagram={this.initDiagram}
-        nodeDataArray={this.props.nodeDataArray}
-        linkDataArray={this.props.linkDataArray}
+        nodeDataArray={this.props.model}
         modelData={this.props.modelData}
         onModelChange={this.props.onModelChange}
         skipsDiagramUpdate={this.props.skipsDiagramUpdate}

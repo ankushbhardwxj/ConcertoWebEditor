@@ -11,7 +11,7 @@ import React from "react"
 //   skipsDiagramUpdate: boolean;
 // }
 
-class Diagram extends React.Component {
+class D2iagram extends React.Component {
 // 	private mapNodeKeyIdx: Map<go.Key, number>;
 //   private mapLinkKeyIdx: Map<go.Key, number>;
 // 	private diagramRef: React.RefObject<ReactDiagram>
@@ -425,4 +425,4 @@ class Diagram extends React.Component {
 // 	}
 }
 
-export default Diagram
+export default D2iagram
