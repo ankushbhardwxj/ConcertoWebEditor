@@ -1,8 +1,6 @@
-const ModelM = require('@accordproject/concerto-core').ModelManager
-export var modelManager = new ModelM()
+var modelManager
 export var nodeDataArray = []
 export var linkDataArray = []
-
 
 //updates model after being parsed from Editor
 export function generateModelFromCode(model) {
