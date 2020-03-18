@@ -2,7 +2,13 @@ import React from 'react';
 import './App.css';
 import Diagram from './Diagram'
 import CodeEditor from './Editor'
-import { modelManager, nodeDataArray, linkDataArray,generateModelFromCode } from './model'
+import { 
+  modelManager, 
+  nodeDataArray, 
+  linkDataArray,
+  generateModelFromCode,
+  updateDiagram
+} from './model'
 import { codeCTO } from './Code';
 
 class App extends React.Component {
@@ -11,7 +17,12 @@ class App extends React.Component {
     this.state = {
       code : codeCTO,
       nodeData : [],
-      linkData : []
+      linkData : [],
+      modelData: {
+        canRelink: true
+      },
+      selectedData: null,
+      skipsDiagramUpdate: false
     }
   }
   parseCode(code){
@@ -19,7 +30,6 @@ class App extends React.Component {
     const modelManager = new ModelManager()
     modelManager.addModelFile(code);
     const modelFile = modelManager.getModelFiles()
-    // console.log(modelManager.modelFiles['concerto.metamodel'].declarations)
     generateModelFromCode(modelFile)
     this.setState({
       nodeData : nodeDataArray, 
@@ -44,6 +54,13 @@ class App extends React.Component {
       console.log(e)
     }
   }
+  handleModelChange() {
+    console.log("Handle this model")
+    updateDiagram()
+  }
+  handleDiagramEvent() {
+    console.log(("handle diagram event"))
+  }
   render() {
     return (
         <div style={{display:"grid", grid:"0px / auto auto"}}>
@@ -54,6 +71,10 @@ class App extends React.Component {
           <Diagram 
             nodeData = {this.state.nodeData}
             linkData = {this.state.linkData}
+            modelData={this.state.modelData}
+            skipsDiagramUpdate={this.state.skipsDiagramUpdate}
+            handleModelChange={this.handleModelChange}
+            handleDiagramEvent={this.handleDiagramEvent}
           />
         </div>
     );

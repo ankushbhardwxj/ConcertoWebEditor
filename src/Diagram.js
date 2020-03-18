@@ -2,7 +2,7 @@ import React from "react"
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import GuidedDraggingTool  from './GuidedDraggingTool';
-import {generateModelFromCode} from './model'
+import {generateModelFromCode, updateDiagram} from './model'
 import './App.css'
 
 class Diagram extends React.Component {
@@ -70,9 +70,7 @@ class Diagram extends React.Component {
 
     return diagram;
   }
-  handleModelChange() {
-    console.log("Handle this model")
-  }
+ 
   render() {
     return(
       <ReactDiagram
@@ -80,7 +78,10 @@ class Diagram extends React.Component {
         initDiagram={this.initDiagram}
         nodeDataArray={this.props.nodeData}
         linkDataArray={this.props.linkData}
-        onModelChange={this.handleModelChange} 
+        modelData={this.props.modelData}
+        skipsDiagramUpdate={this.props.skipsDiagramUpdate}
+        onModelChange={this.props.handleModelChange} 
+        onDiagramEvent={this.props.handleDiagramEvent}
       />
     )
   }
