@@ -14,6 +14,7 @@ import { codeCTO } from './Code';
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.diagramRef = React.createRef()
     this.state = {
       code : codeCTO,
       nodeData : [],
@@ -24,6 +25,9 @@ class App extends React.Component {
       selectedData: null,
       skipsDiagramUpdate: false
     }
+
+    this.handleDiagramEvent = this.handleDiagramEvent.bind(this)
+    this.handleModelChange = this.handleModelChange.bind(this)
   }
   parseCode(code){
     const ModelManager = require('@accordproject/concerto-core').ModelManager
@@ -55,6 +59,7 @@ class App extends React.Component {
     }
   }
   handleModelChange() {
+    // console.clear()
     console.log("Handle this model")
     updateDiagram()
   }
@@ -69,6 +74,7 @@ class App extends React.Component {
             onChange = {this.onChange.bind(this)}
           />   
           <Diagram 
+            refer ={this.diagramRef}
             nodeData = {this.state.nodeData}
             linkData = {this.state.linkData}
             modelData={this.state.modelData}

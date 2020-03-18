@@ -70,10 +70,17 @@ class Diagram extends React.Component {
 
     return diagram;
   }
- 
+  componentDidMount() {
+    if (!this.props.refer.current) return;
+    const diagram = this.props.refer.current.getDiagram();
+    if (diagram instanceof go.Diagram) {
+      diagram.addDiagramListener('ChangedSelection', this.props.handleDiagramEvent);
+    }
+  }
   render() {
     return(
       <ReactDiagram
+        ref={this.props.refer}
         divClassName="diagram-component"
         initDiagram={this.initDiagram}
         nodeDataArray={this.props.nodeData}
