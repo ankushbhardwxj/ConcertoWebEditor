@@ -63,8 +63,38 @@ class App extends React.Component {
     console.log("Handle this model")
     updateDiagram()
   }
-  handleDiagramEvent() {
-    console.log(("handle diagram event"))
+  handleDiagramEvent(e) {
+    const name = e.name;
+    switch (name) {
+      case "ChangedSelection": {
+        const sel = e.subject.first();
+        console.log(sel)
+        // this.setState(
+        //   produce((draft: AppState) => {
+        //     if (sel) {
+        //       if (sel instanceof go.Node) {
+        //         const idx = this.mapNodeKeyIdx.get(sel.key);
+        //         if (idx !== undefined && idx >= 0) {
+        //           const nd = draft.nodeDataArray[idx];
+        //           draft.selectedData = nd;
+        //         }
+        //       } else if (sel instanceof go.Link) {
+        //         const idx = this.mapLinkKeyIdx.get(sel.key);
+        //         if (idx !== undefined && idx >= 0) {
+        //           const ld = draft.linkDataArray[idx];
+        //           draft.selectedData = ld;
+        //         }
+        //       }
+        //     } else {
+        //       draft.selectedData = null;
+        //     }
+        //   })
+        // );
+        break;
+      }
+      default:
+        break;
+    }
   }
   render() {
     return (
@@ -74,9 +104,9 @@ class App extends React.Component {
             onChange = {this.onChange.bind(this)}
           />   
           <Diagram 
-            refer ={this.diagramRef}
-            nodeData = {this.state.nodeData}
-            linkData = {this.state.linkData}
+            refer={this.diagramRef}
+            nodeData={this.state.nodeData}
+            linkData={this.state.linkData}
             modelData={this.state.modelData}
             skipsDiagramUpdate={this.state.skipsDiagramUpdate}
             handleModelChange={this.handleModelChange}

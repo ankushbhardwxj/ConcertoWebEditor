@@ -1,8 +1,6 @@
 import React from "react"
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import GuidedDraggingTool  from './GuidedDraggingTool';
-import {generateModelFromCode, updateDiagram} from './model'
 import './App.css'
 
 class Diagram extends React.Component {
@@ -75,6 +73,13 @@ class Diagram extends React.Component {
     const diagram = this.props.refer.current.getDiagram();
     if (diagram instanceof go.Diagram) {
       diagram.addDiagramListener('ChangedSelection', this.props.handleDiagramEvent);
+    }
+  }
+  componentWillUnmount() {
+    if (!this.props.refer.current) return;
+    const diagram = this.props.refer.current.getDiagram();
+    if (diagram instanceof go.Diagram) {
+      diagram.removeDiagramListener('ChangedSelection', this.props.handleDiagramEvent);
     }
   }
   render() {
