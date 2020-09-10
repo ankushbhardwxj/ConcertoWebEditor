@@ -1,120 +1,51 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Diagram from './Diagram'
 import CodeEditor from './Editor'
-import { 
-  modelManager, 
-  nodeDataArray, 
-  linkDataArray,
-  generateModelFromCode,
-  updateDiagram
+import {
+  parse
 } from './model'
 import { codeCTO } from './Code';
+import { Container, Navbar, Row, Col } from 'react-bootstrap'
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.diagramRef = React.createRef()
-    this.state = {
-      code : codeCTO,
-      nodeData : [],
-      linkData : [],
-      modelData: {
-        canRelink: true
-      },
-      selectedData: null,
-      skipsDiagramUpdate: false
-    }
+const App = () => {
+  const [code, setCode] = useState(codeCTO)
 
-    this.handleDiagramEvent = this.handleDiagramEvent.bind(this)
-    this.handleModelChange = this.handleModelChange.bind(this)
+  const parseCode = () => {
+    console.log("parsing")
+    parse(code)
   }
-  parseCode(code){
-    const ModelManager = require('@accordproject/concerto-core').ModelManager
-    const modelManager = new ModelManager()
-    modelManager.addModelFile(code);
-    const modelFile = modelManager.getModelFiles()
-    generateModelFromCode(modelFile)
-    this.setState({
-      nodeData : nodeDataArray, 
-      linkData : linkDataArray
-    })
-  }
-  onChange(newValue) {
+
+  const handleChange = (newCode) => {
     console.clear()
-    try {
-      this.parseCode(newValue)
-      this.setState({
-        code: newValue
-      })
-    } catch(e) {
-      console.log(e);
-    }
+    parse(newCode)
   }
-  componentDidMount(){
-    try {
-      this.parseCode(this.state.code)
-    }catch(e) {
-      console.log(e)
-    }
-  }
-  handleModelChange() {
-    // console.clear()
-    console.log("Handle this model")
-    updateDiagram()
-  }
-  handleDiagramEvent(e) {
-    const name = e.name;
-    switch (name) {
-      case "ChangedSelection": {
-        const sel = e.subject.first();
-        console.log(sel)
-        // this.setState(
-        //   produce((draft: AppState) => {
-        //     if (sel) {
-        //       if (sel instanceof go.Node) {
-        //         const idx = this.mapNodeKeyIdx.get(sel.key);
-        //         if (idx !== undefined && idx >= 0) {
-        //           const nd = draft.nodeDataArray[idx];
-        //           draft.selectedData = nd;
-        //         }
-        //       } else if (sel instanceof go.Link) {
-        //         const idx = this.mapLinkKeyIdx.get(sel.key);
-        //         if (idx !== undefined && idx >= 0) {
-        //           const ld = draft.linkDataArray[idx];
-        //           draft.selectedData = ld;
-        //         }
-        //       }
-        //     } else {
-        //       draft.selectedData = null;
-        //     }
-        //   })
-        // );
-        break;
-      }
-      default:
-        break;
-    }
-  }
-  render() {
-    return (
-        <div style={{display:"grid", grid:"0px / auto auto"}}>
-          <CodeEditor 
-            code = {this.state.code}
-            onChange = {this.onChange.bind(this)}
-          />   
-          <Diagram 
-            refer={this.diagramRef}
-            nodeData={this.state.nodeData}
-            linkData={this.state.linkData}
-            modelData={this.state.modelData}
-            skipsDiagramUpdate={this.state.skipsDiagramUpdate}
-            handleModelChange={this.handleModelChange}
-            handleDiagramEvent={this.handleDiagramEvent}
+
+  useEffect(() => {
+    console.clear()
+    parseCode()
+  })
+
+  return (
+    <Container fluid>
+      <Navbar bg="dark" variant="dark">
+        <p style={{color: "white"}}>Concerto Schema Language to UML converter</p>
+      </Navbar>
+      <Row>
+        <Col>
+          <CodeEditor
+            code = {codeCTO}
+            onChange = {handleChange}
           />
-        </div>
-    );
-  }
+        </Col>
+        <Col>
+          <Diagram 
+            refer={React.createRef()}
+          />
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
 export default App;
