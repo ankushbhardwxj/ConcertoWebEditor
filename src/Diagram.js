@@ -23,7 +23,7 @@ class Diagram extends React.Component {
         linkKeyProperty: 'key'
       })
     })
-    
+
     diagram.nodeTemplate =
       $(go.Node, 'Auto',  // the Shape will go around the TextBlock
         new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),

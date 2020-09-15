@@ -13,12 +13,14 @@ const App = () => {
 
   const parseCode = () => {
     console.log("parsing")
-    parse(code)
+    const metadata = parse(code)
+    console.log(metadata)
   }
 
   const handleChange = (newCode) => {
     console.clear()
-    parse(newCode)
+    const metadata = parse(newCode)
+    console.log(metadata)
   }
 
   useEffect(() => {

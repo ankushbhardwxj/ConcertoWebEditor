@@ -59,21 +59,22 @@ export const parse = (code) => {
   let metadata = []
   let lines = code.split("\n")
 
-  const addMetadata = (id, lineNumber, line, metamodel, data) => {
+  const addMetadata = (id, lineNumber, line, metamodel, data, relationship) => {
     metadata.push({
       id: id,
       lineNumber: lineNumber,
       line: line,
       metamodel: metamodel,
-      data: data
+      data: data,
+      relationship: relationship
     })
   }
 
   var properties = []
   var lineNumber = 0;
-  var line, metamodel, data;
+  var line, metamodel, data, relationship
   var bracketOpen = false;
-  var isAbstract = false;
+  var isAbstract = false, isConcept = false;
   var skipLine = false;
   var openingLine, openingLineNumber;
   var id = 0;
@@ -117,30 +118,68 @@ export const parse = (code) => {
       if(tempLine.includes("abstract")){
         isAbstract = true;
         var pos = tempLine.indexOf("abstract")
-        metamodel = tempLine[pos] + " " + tempLine[pos+1] 
+        metamodel = tempLine[pos] + " " + tempLine[pos+1]
         if(tempLine.includes("{")) bracketOpen = true;
         skipLine = true;
       }
       // check for concept and relationships
-    
+      else if(tempLine.includes("concept")){
+        isConcept = true;
+        var notExtends = false
+        if(tempLine.includes("{")) bracketOpen = true;
+        var pos = tempLine.indexOf("concept")
+        var relatnPos = tempLine.indexOf("identified")
+        if(relatnPos !== -1) notExtends = true
+        relatnPos = relatnPos >= 0 ? relatnPos : tempLine.indexOf("extends")
+        if(notExtends) relatnPos++
+        metamodel = tempLine[pos]
+        relationship = {
+          "from": tempLine[relatnPos+1],
+          "to": tempLine[pos+1]
+        }
+        skipLine = true
+      }
     }
     // adding properties of abstract concept to the model
+    // TODO: make separate function for both abstract and concept
       if(bracketOpen && isAbstract && line.search("}") !== -1){
         data = {
           "properties": properties
         }
         properties = []
-        isAbstract = false;
-        bracketOpen = false;
+        isAbstract = false
+        bracketOpen = false
         addMetadata(id++, openingLineNumber, openingLine, metamodel, data)
       } else if(bracketOpen && isAbstract && line.search("o") !== -1) {
-        if(!skipLine) properties.push({"property": line, "lineNumber": lineNumber})
+        if(!skipLine) properties.push({
+          "property": line,
+          "lineNumber": lineNumber
+        })
+        skipLine = false
+      }
+
+      // adding properties of concept to the model
+      if(bracketOpen && isConcept && line.search("}") !== -1){
+        data = {
+          "properties": properties
+        }
+        properties = []
+        isConcept = false
+        bracketOpen = false
+        addMetadata(id++, openingLineNumber, openingLine, metamodel, data, relationship)
+      } else if(bracketOpen && isConcept && line.search("o") !== -1) {
+        if(!skipLine) properties.push({
+            "property": line,
+            "lineNumber": lineNumber
+        })
         skipLine = false
       }
   });
-  console.log(metadata)
+  return metadata
 }
 /*
+
+JSON STRUCTURE
 {[{
   id: 1,
   lineNumber: 1,
@@ -157,8 +196,8 @@ export const parse = (code) => {
   id: 2,
   lineNumber: 4,
   line: concept Sushmita extends Ankush,
-  nodeName: Sushmita,
-  relatedNodeName: Ankush,
+  relationship: {from: Sushmita, to: Ankush}
+  relationship: {from: 2, to: 1}
   properties: [
     {
       lineNumber: 5,
