@@ -75,12 +75,12 @@ export const parse = (code) => {
   var line, metamodel, data, relationship
   var bracketOpen = false;
   var isAbstract = false, isConcept = false;
-  var skipLine = false;
   var openingLine, openingLineNumber;
   var id = 0;
   lines.forEach((element, idx) => {
     lineNumber = idx + 1;
     line = element;
+    //if(line.split(" ")[0] == "asset") console.log(line)
       /****** comments ******/
     if (line.search("//") !== -1) {
       metamodel = "comment"
@@ -120,63 +120,76 @@ export const parse = (code) => {
         var pos = tempLine.indexOf("abstract")
         metamodel = tempLine[pos] + " " + tempLine[pos+1]
         if(tempLine.includes("{")) bracketOpen = true;
-        skipLine = true;
       }
       // check for concept and relationships
-      else if(tempLine.includes("concept")){
+      else if(tempLine.includes("concept")
+      || tempLine.includes("asset")
+      || tempLine.includes("participant")
+      || tempLine.includes("transaction")
+      || tempLine.includes("enum")) {
         isConcept = true;
-        var notExtends = false
+        var identified = false
+        var extended = false
+        var pos, relatnPos;
         if(tempLine.includes("{")) bracketOpen = true;
-        var pos = tempLine.indexOf("concept")
-        var relatnPos = tempLine.indexOf("identified")
-        if(relatnPos !== -1) notExtends = true
-        relatnPos = relatnPos >= 0 ? relatnPos : tempLine.indexOf("extends")
-        if(notExtends) relatnPos++
-        metamodel = tempLine[pos]
-        relationship = {
-          "from": tempLine[relatnPos+1],
-          "to": tempLine[pos+1]
+        if(tempLine.includes("concept")) pos = tempLine.indexOf("concept")
+        else if(tempLine.includes("asset")) pos = tempLine.indexOf("asset")
+        else if(tempLine.includes("participant")) pos = tempLine.indexOf("participant")
+        else if(tempLine.includes("transaction")) pos = tempLine.indexOf("transaction")
+        else if(tempLine.includes("enum")) pos = tempLine.indexOf("enum")
+
+        if(tempLine.includes("identified")) {
+          identified = true
+          relatnPos = tempLine.indexOf("identified") + 1
+        } else if(tempLine.includes("extends")) {
+          extended = true
+          relatnPos = tempLine.indexOf("extends")
         }
-        skipLine = true
+        metamodel = tempLine[pos]
+        if(identified || extended) {
+          relationship = {
+            "from": tempLine[relatnPos+1],
+            "to": tempLine[pos+1]
+          }
+        } else relationship = undefined
       }
     }
     // adding properties of abstract concept to the model
     // TODO: make separate function for both abstract and concept
-      if(bracketOpen && isAbstract && line.search("}") !== -1){
-        data = {
-          "properties": properties
-        }
-        properties = []
-        isAbstract = false
-        bracketOpen = false
-        addMetadata(id++, openingLineNumber, openingLine, metamodel, data)
-      } else if(bracketOpen && isAbstract && line.search("o") !== -1) {
-        if(!skipLine) properties.push({
-          "property": line,
-          "lineNumber": lineNumber
-        })
-        skipLine = false
+    if(bracketOpen && isAbstract && line.search("}") !== -1){
+      data = {
+        "properties": properties
       }
+      properties = []
+      isAbstract = false
+      bracketOpen = false
+      addMetadata(id++, openingLineNumber, openingLine, metamodel, data)
+    } else if(bracketOpen && isAbstract && line.trim("o")[0] == "o" ) {
+      properties.push({
+        "property": line.trim(" "),
+        "lineNumber": lineNumber
+      })
+    }
 
-      // adding properties of concept to the model
-      if(bracketOpen && isConcept && line.search("}") !== -1){
-        data = {
-          "properties": properties
-        }
-        properties = []
-        isConcept = false
-        bracketOpen = false
-        addMetadata(id++, openingLineNumber, openingLine, metamodel, data, relationship)
-      } else if(bracketOpen && isConcept && line.search("o") !== -1) {
-        if(!skipLine) properties.push({
-            "property": line,
-            "lineNumber": lineNumber
-        })
-        skipLine = false
+    // adding properties of concept to the model
+    if(bracketOpen && isConcept && line.search("}") !== -1){
+      data = {
+        "properties": properties
       }
+      properties = []
+      isConcept = false
+      bracketOpen = false
+      addMetadata(id++, openingLineNumber, openingLine, metamodel, data, relationship)
+    } else if(bracketOpen && isConcept && line.trim(" ")[0] == "o") {
+      properties.push({
+          "property": line.trim(" "),
+          "lineNumber": lineNumber
+      })
+    }
   });
   return metadata
 }
+
 /*
 
 JSON STRUCTURE
