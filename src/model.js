@@ -1,54 +1,3 @@
-var modelManager
-export var nodeDataArray = []
-export var linkDataArray = []
-
-//updates model after being parsed from Editor
-export function generateModelFromCode(model) {
-  modelManager = model
-  console.log(modelManager)
-  nodeDataArray = []
-  linkDataArray = []
-  generateNodeDataArray()
-  generateLinkDataArray()
-  console.log(nodeDataArray)
-  console.log(linkDataArray)
-}
-  // key - name of class
-  // type - type of declaration
-  // properties - name and type of properties
-
-export function generateNodeDataArray() {
-  const model = modelManager[0].declarations
-  const nodeObj = {key: '', type: '', properties: []}
-  model.map((res,idx) => {
-    nodeObj[idx] = {key: res.name, type: res.ast.type, properties: res.properties}
-    nodeDataArray.push(nodeObj[idx])
-  })
-  return nodeDataArray
-}
-
-// generates relationship array
-
-export function generateLinkDataArray() {
-  const model = modelManager[0].declarations
-  const linkObj = {to: '', from: ''}
-  var key = 0
-  model.map((res,idx) => {
-    if(res.superType) {
-      linkObj[key] = {to: res.name, from: res.superType}
-      linkDataArray.push(linkObj[key])
-      key++
-    }
-  })
-  linkDataArray.push(linkObj)
-  return linkDataArray
-}
-
-export function updateDiagram() {
-  //make changes to model declarations using node data and link data
-  const model = modelManager[0].declarations
-  console.log(model)
-}
 /*
 [{
   id, lineNumber, line, metamodel, data
@@ -59,12 +8,13 @@ export const parse = (code) => {
   let metadata = []
   let lines = code.split("\n")
 
-  const addMetadata = (id, lineNumber, line, metamodel, data, relationship) => {
+  const addMetadata = (id, lineNumber, line, metamodel, metamodelName, data, relationship) => {
     metadata.push({
       id: id,
       lineNumber: lineNumber,
       line: line,
       metamodel: metamodel,
+      metamodelName: metamodelName,
       data: data,
       relationship: relationship
     })
@@ -72,7 +22,7 @@ export const parse = (code) => {
 
   var properties = []
   var lineNumber = 0;
-  var line, metamodel, data, relationship
+  var line, metamodel, metamodelName, data, relationship
   var bracketOpen = false;
   var isAbstract = false, isConcept = false;
   var openingLine, openingLineNumber;
@@ -85,7 +35,7 @@ export const parse = (code) => {
     if (line.search("//") !== -1) {
       metamodel = "comment"
       data = line;
-      addMetadata(id++, lineNumber, line, metamodel, data)
+      addMetadata(id++, lineNumber, line, metamodel, undefined, data)
     } else if (line.split(" ")[0] === "namespace") {
       /****** namespace ******/
       metamodel = "namespace"
@@ -104,11 +54,11 @@ export const parse = (code) => {
         } else {
           data = line.split(" ")[1]
         }
-        addMetadata(id++, lineNumber, line, metamodel, data)
+        addMetadata(id++, lineNumber, line, metamodel, undefined, data)
     } else if (line.search("@") !== -1) {
       /****** decorators ******/
       metamodel="decorators"
-      addMetadata(id++, lineNumber, line, metamodel, line)
+      addMetadata(id++, lineNumber, line, metamodel, undefined, line)
     } else if (line.search("{") !== -1) {
       /****** classes and relationships ******/
       let tempLine = line.split(" ")
@@ -119,6 +69,7 @@ export const parse = (code) => {
         isAbstract = true;
         var pos = tempLine.indexOf("abstract")
         metamodel = tempLine[pos] + " " + tempLine[pos+1]
+        metamodelName = tempLine[pos + 2]
         if(tempLine.includes("{")) bracketOpen = true;
       }
       // check for concept and relationships
@@ -146,6 +97,7 @@ export const parse = (code) => {
           relatnPos = tempLine.indexOf("extends")
         }
         metamodel = tempLine[pos]
+        metamodelName = tempLine[pos+1]
         if(identified || extended) {
           relationship = {
             "from": tempLine[relatnPos+1],
@@ -163,7 +115,7 @@ export const parse = (code) => {
       properties = []
       isAbstract = false
       bracketOpen = false
-      addMetadata(id++, openingLineNumber, openingLine, metamodel, data)
+      addMetadata(id++, openingLineNumber, openingLine, metamodel, metamodelName, data)
     } else if(bracketOpen && isAbstract && line.trim("o")[0] == "o" ) {
       properties.push({
         "property": line.trim(" "),
@@ -179,7 +131,7 @@ export const parse = (code) => {
       properties = []
       isConcept = false
       bracketOpen = false
-      addMetadata(id++, openingLineNumber, openingLine, metamodel, data, relationship)
+      addMetadata(id++, openingLineNumber, openingLine, metamodel, metamodelName, data, relationship)
     } else if(bracketOpen && isConcept && line.trim(" ")[0] == "o") {
       properties.push({
           "property": line.trim(" "),
@@ -190,6 +142,8 @@ export const parse = (code) => {
   return metadata
 }
 
+export var nodeDataArray
+export var linkDataArray
 /*
 
 JSON STRUCTURE

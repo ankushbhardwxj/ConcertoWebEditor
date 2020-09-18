@@ -1,71 +1,128 @@
-import React from "react"
+import React, { useEffect } from "react"
 import * as go from 'gojs';
-import { ReactDiagram } from 'gojs-react';
+import { ReactDiagram, ReactPalette } from 'gojs-react';
 import './App.css'
 
+const Diagram = (props) => {
+  const initPalette = () => {
+    const $ = go.GraphObject.make
+    const palette = $(go.Palette)
+    palette.nodeTemplate =
+    $(go.Node, "Horizontal",
+    $(go.Shape,
+      {width: 14, height: 14, fill: "white"},
+        new go.Binding("fill", "color")),
+        $(go.TextBlock, 
+         new go.Binding("text", "key")))
+
+    palette.model.nodeDataArray = [
+      {key: "asset", color: "yellow"},
+      {key: "concept", color: "yellow"},
+      {key: "relationship", color: "yellow"}
+    ]
+    return palette
+  }
+
+  const initDiagram = () => {
+    const $ = go.GraphObject.make
+    const diagram = $(go.Diagram)
+
+    diagram.nodeTemplate =
+    $(go.Node, "Auto",  // the Shape automatically fits around the TextBlock
+      $(go.Shape, "RoundedRectangle",  // use this kind of figure for the Shape
+        // bind Shape.fill to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // bind TextBlock.text to Node.data.key
+        new go.Binding("text", "key"))
+    );
+
+      // the Model holds only the essential information describing the diagram
+      diagram.model = new go.GraphLinksModel(
+      [ // a JavaScript Array of JavaScript objects, one per node;
+        // the "color" property is added specifically for this app
+        { key: "Alpha", color: "lightblue" },
+        { key: "Beta", color: "orange" },
+        { key: "Gamma", color: "lightgreen" },
+        { key: "Delta", color: "pink" }
+      ],
+      [ // a JavaScript Array of JavaScript objects, one per link
+        { from: "Alpha", to: "Beta" },
+        { from: "Alpha", to: "Gamma" },
+        { from: "Gamma", to: "Delta" },
+        { from: "Delta", to: "Alpha" }
+      ]);
+
+      // enable Ctrl-Z to undo and Ctrl-Y to redo
+      diagram.undoManager.isEnabled = true;
+    return diagram
+  }
+
+  useEffect(()=>{
+    if (!props.refer.current) return;
+    const diagram = props.refer.current.getDiagram();
+    if (diagram instanceof go.Diagram) {
+      diagram.removeDiagramListener('ChangedSelection', props.handleDiagramEvent);
+    }
+  })
+
+  return (
+    <div>
+    <ReactDiagram
+      ref={props.refer}
+      divClassName="diagram-component"
+      initDiagram={initDiagram}
+      nodeDataArray={props.nodeData}
+      linkDataArray={props.linkData}
+      modelData={props.modelData}
+      skipsDiagramUpdate={props.skipsDiagramUpdate}
+      onModelChange={props.handleModelChange} 
+      onDiagramEvent={props.handleDiagramEvent}
+    ></ReactDiagram>
+    <ReactPalette
+      initPalette={initPalette}
+      ></ReactPalette>
+    </div>
+  )
+}
+
+export default Diagram
+/*
 class Diagram extends React.Component {
   initDiagram() {
     const $ = go.GraphObject.make
-    const diagram = $(go.Diagram, {
-      'undoManager.isEnabled': true,
-      'clickCreatingTool.archetypeNodeData' : {
-        text: 'new node', color: 'lightyellow'
-      },
-      layout: $(go.TreeLayout,{
-        angle: 90,
-        path: go.TreeLayout.PathSource,  // links go from child to parent
-        setsPortSpot: false,  // keep Spot.AllSides for link connection spot
-        setsChildPortSpot: false,  // keep Spot.AllSides
-        // nodes not connected by "generalization" links are laid out horizontally
-        arrangement: go.TreeLayout.ArrangementHorizontal
-      }),
-      model: $(go.GraphLinksModel,{
-        linkKeyProperty: 'key'
-      })
-    })
-
+    const diagram = $(go.Diagram)
     diagram.nodeTemplate =
-      $(go.Node, 'Auto',  // the Shape will go around the TextBlock
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, 'RoundedRectangle',
-          {
-            name: 'SHAPE', fill: 'lightyellow', strokeWidth: 0,
-            // set the port properties:
-            portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer'
-          },
-          // Shape.fill is bound to Node.data.color
-          new go.Binding('fill', 'lightyellow')),
-        $(go.Panel, 'Table', {defaultRowSeparatorStroke:'black'},
-         //header
-         $(go.TextBlock, 
-          { margin: 8, editable: true, font: '400 .875rem Roboto, sans-serif' },  // some room around the text
-            new go.Binding('text','key').makeTwoWay()
-          ),
-          //props
-          $(go.TextBlock, "Properties",
-                  { row: 1, font: "italic 10pt sans-serif" },
-                  new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("PROPERTIES")),
-                $(go.Panel, "Vertical", { name: "PROPERTIES" },
-                  new go.Binding("itemArray", "properties").makeTwoWay(),
-                  {
-                    row: 1, margin: 3, defaultAlignment: go.Spot.TopRight, visible: false
-                  }
-                ),
-                $("PanelExpanderButton", "PROPERTIES",
-                  { row: 1, margin: 3,column: 1, defaultAlignment: go.Spot.TopRight, visible: false},
-                  new go.Binding("visible", "properties", function (arr) {
-                    return arr.length > 0; })),
-             ))
+    $(go.Node, "Auto",  // the Shape automatically fits around the TextBlock
+      $(go.Shape, "RoundedRectangle",  // use this kind of figure for the Shape
+        // bind Shape.fill to Node.data.color
+        new go.Binding("fill", "color")),
+      $(go.TextBlock,
+        { margin: 3 },  // some room around the text
+        // bind TextBlock.text to Node.data.key
+        new go.Binding("text", "key"))
+    );
 
-    // relinking depends on modelData
-    diagram.linkTemplate =
-      $(go.Link,
-        new go.Binding('relinkableFrom', 'canRelink').ofModel(),
-        new go.Binding('relinkableTo', 'canRelink').ofModel(),
-        $(go.Shape),
-        $(go.Shape, { toArrow: 'Standard' })
-      );
+      // the Model holds only the essential information describing the diagram
+      diagram.model = new go.GraphLinksModel(
+      [ // a JavaScript Array of JavaScript objects, one per node;
+        // the "color" property is added specifically for this app
+        { key: "Alpha", color: "lightblue" },
+        { key: "Beta", color: "orange" },
+        { key: "Gamma", color: "lightgreen" },
+        { key: "Delta", color: "pink" }
+      ],
+      [ // a JavaScript Array of JavaScript objects, one per link
+        { from: "Alpha", to: "Beta" },
+        { from: "Alpha", to: "Gamma" },
+        { from: "Beta", to: "Beta" },
+        { from: "Gamma", to: "Delta" },
+        { from: "Delta", to: "Alpha" }
+      ]);
 
+      // enable Ctrl-Z to undo and Ctrl-Y to redo
+      diagram.undoManager.isEnabled = true;
     return diagram;
   }
   componentDidMount() {
@@ -98,5 +155,5 @@ class Diagram extends React.Component {
     )
   }
 }
+*/
 
-export default Diagram

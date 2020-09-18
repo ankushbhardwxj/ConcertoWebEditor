@@ -3,28 +3,27 @@ import MonacoEditor from 'react-monaco-editor';
 import {generateModelFromCode} from "./model"
 import { codeCTO } from './Code'
 
+const CodeEditor = (props) => {
+  const editorDidMount = (editor, monaco) => {
+    editor.focus()
+  }
 
-class CodeEditor extends React.Component {
-  editorDidMount(editor, monaco) {
-    editor.focus();
+  const options = {
+    selectOnLineNumbers: true
   }
-  render(){
-    const options = {
-      selectOnLineNumbers: true
-    };
-    return(
-      <MonacoEditor
-        width="700"
-        height="752"
-        language="javascript"
-        theme="vs-dark"
-        value={this.props.code}
-        options={options}
-        onChange={this.props.onChange}
-        editorDidMount={this.editorDidMount}
-      />
-    )
-  }
+  
+  return(
+    <MonacoEditor
+      width="700"
+      height="752"
+      language="javascript"
+      theme="vs-dark"
+      value={props.code}
+      options={options}
+      onChange={props.onChange}
+      editorDidMount={editorDidMount}
+    />
+  )
 }
 
 export default CodeEditor
