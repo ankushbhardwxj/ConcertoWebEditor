@@ -5,14 +5,22 @@ import { parse } from './model'
 import { codeCTO } from './Code';
 import { Container, Navbar, Row, Col } from 'react-bootstrap'
 import * as go from 'gojs'
+var metamodel = []
+var links = []
+var diagram;
+const $ = go.GraphObject.make
 
 const App = () => {
   const [code, setCode] = useState(codeCTO)
 
   const parseCode = (newCode) => {
-    console.log("parsing")
-    const metadata = parse(newCode)
-    return metadata
+    metamodel = parse(newCode)
+    links = []
+    metamodel.map(r => {
+      if(r.relationship !== undefined)
+      links.push(r.relationship)
+    })
+    console.log(links)
   }
 
   const showNewCode = (metadata) => {
@@ -26,9 +34,8 @@ const App = () => {
     })
   }
 
-  const setupDiagram = (metadata) => {
-    const $ = go.GraphObject.make
-    var diagram = $(go.Diagram, "myDiagramDiv",{
+  const setupDiagram = () => {
+    diagram = $(go.Diagram, "myDiagramDiv",{
       "undoManager.isEnabled": true,
       layout: $(go.TreeLayout, {
         angle: 90,
@@ -53,17 +60,28 @@ const App = () => {
       }, new go.Binding("text", "metamodelName").makeTwoWay()),
       // properties
       $(go.TextBlock, "Properties", {
-        row: 1, font: "italic 10pt sans-serif"
-      }, ),
-      $(go.Panel, "Vertical", { name: "PROPERTIES" },
-      new go.Binding("nodeDataArray", "data", (e) => (e.properties.map(r => r.property))),{
-        row: 1, margin: 3, stretch: go.GraphObject.Fill,
-        defaultAlignment: go.Spot.Left, background: "lightyellow",
-      }),
-      $("PanelExpanderButton", "PROPERTIES",{
-        row: 1, column: 1, alignment: go.Spot.TopRight
-      }, new go.Binding("nodeDataArray", "data", (e) => (e.properties.map(r => r.property))))
+        row: 1, font: "italic 10pt sans-serif",
+      }, new go.Binding("visible", "visible", (v) => !v).ofObject("PROPERTIES")),
+        $(go.Panel, "Vertical", {name: "PROPERTIES"},
+          new go.Binding("itemArray", "data", (e) => e.properties.map(r => r.property)), {
+            row: 1, margin: 3, stretch: go.GraphObject.Fill,
+            defaultAlignment: go.Spot.Left,
+          }),
+          $("PanelExpanderButton", "PROPERTIES", {
+            row: 1, column: 1, alignment: go.Spot.TopRight,
+          }, new go.Binding("itemArray", "data.property", ))
     ))
+
+    diagram.linkTemplate =
+    $(go.Link,
+      $(go.Shape,
+          new go.Binding("stroke", "black"),
+          new go.Binding("strokeWidth", 2)),
+          $(go.Shape,{
+            toArrow: "OpenTriangle"
+          },
+          new go.Binding("stroke", "black"),
+          new go.Binding("strokeWidth", 2)))
 
     diagram.addModelChangedListener((evt) => {
       if(evt.modelChange == "nodeDataArray"){
@@ -74,13 +92,12 @@ const App = () => {
     diagram.model = $(go.GraphLinksModel, {
       copiesArrays: true,
       copiesArrayObjects: true,
-      nodeDataArray: metadata,
-      linkDataArray: metadata
+      nodeDataArray: metamodel,
+      linkDataArray: links
     })
   }
 
   const setupPalette = () => {
-    const $ = go.GraphObject.make
     var myPalette = $(go.Palette, "myPalette")
     myPalette.nodeTemplate = $(go.Node, "Horizontal",
     $(go.Shape, {width: 14, height: 14, fill: "white"},
@@ -97,18 +114,21 @@ const App = () => {
 
   const handleChange = (newCode) => {
     console.clear()
-    const metadata = parseCode(newCode)
-    //console.log(metadata)
-    setupDiagram(metadata)
+    parseCode(newCode)
+    console.log(newCode)
+    diagram.model = $(go.GraphLinksModel, {
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: metamodel,
+      linkDataArray: links
+    })
   }
 
   // on first load of the component
   useEffect(() => {
     console.clear()
-    console.log("asd")
-    const metadata = parseCode(code)
-    //console.log(metadata)
-    setupDiagram(metadata)
+    parseCode(code)
+    setupDiagram(metamodel)
     setupPalette()
   })
 
