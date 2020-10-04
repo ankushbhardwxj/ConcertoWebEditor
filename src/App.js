@@ -1,152 +1,112 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import CodeEditor from './Editor'
-import { parse } from './model'
-import { codeCTO } from './Code';
 import { Container, Navbar, Row, Col } from 'react-bootstrap'
-import * as go from 'gojs'
+import Diagram from './Diagram'
+import {codeCTO} from './Code'
+import NavBar from './NavBar'
+import {
+  setupPaletteDiagram,
+  setupPaletteNodeData,
+  setupUMLDiagram,
+  diagram, addModelListener
+} from './gojsHelper'
+let c = ""
 
 const App = () => {
-  const [code, setCode] = useState(codeCTO)
-
-  const parseCode = (newCode) => {
-    console.log("parsing")
-    const metadata = parse(newCode)
-    return metadata
-  }
-
-  const showNewCode = (metadata) => {
-    metadata.map(data => {
-      console.log(data.line)
-      if(data.data !== undefined){
-        if(data.metamodel !== "comment")
-          data.data.properties.map(x => console.log("  " + x.property))
-        console.log("}")
-      }
-    })
-  }
-
-  const setupDiagram = (metadata) => {
-    const $ = go.GraphObject.make
-    var diagram = $(go.Diagram, "myDiagramDiv",{
-      "undoManager.isEnabled": true,
-      layout: $(go.TreeLayout, {
-        angle: 90,
-        path: go.TreeLayout.PathSource,
-        setsPortSpot: false,
-        setsChildPortSpot: false,
-        arrangement: go.TreeLayout.ArrangementHorizontal
-      })
-    })
-
-    diagram.nodeTemplate = $(go.Node, "Auto", {
-        locationSpot: go.Spot.Center,
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides
-      }, $(go.Shape, {fill: "lightyellow"}),
-      $(go.Panel, "Table", {defaultRowSeparatorStroke: "black"},
-      // header
-      $(go.TextBlock, {
-        row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
-        font: "bold 12pt sans-serif",
-        isMultiline: false, editable: true
-      }, new go.Binding("text", "metamodelName").makeTwoWay()),
-      // properties
-      $(go.TextBlock, "Properties", {
-        row: 1, font: "italic 10pt sans-serif"
-      }, ),
-      $(go.Panel, "Vertical", { name: "PROPERTIES" },
-      new go.Binding("nodeDataArray", "data", (e) => (e.properties.map(r => r.property))),{
-        row: 1, margin: 3, stretch: go.GraphObject.Fill,
-        defaultAlignment: go.Spot.Left, background: "lightyellow",
-      }),
-      $("PanelExpanderButton", "PROPERTIES",{
-        row: 1, column: 1, alignment: go.Spot.TopRight
-      }, new go.Binding("nodeDataArray", "data", (e) => (e.properties.map(r => r.property))))
-    ))
-
-    diagram.addModelChangedListener((evt) => {
-      if(evt.modelChange == "nodeDataArray"){
-        console.log(diagram.model.nodeDataArray)
-      }
-    })
-
-    diagram.model = $(go.GraphLinksModel, {
-      copiesArrays: true,
-      copiesArrayObjects: true,
-      nodeDataArray: metadata,
-      linkDataArray: metadata
-    })
-  }
+  const [model, updateModel] = useState([])
 
   const setupPalette = () => {
-    const $ = go.GraphObject.make
-    var myPalette = $(go.Palette, "myPalette")
-    myPalette.nodeTemplate = $(go.Node, "Horizontal",
-    $(go.Shape, {width: 14, height: 14, fill: "white"},
-      new go.Binding("fill", "color")),
-    $(go.TextBlock, {editable: true, background: "lightblue"},
-      new go.Binding("text", "color")))
-
-    myPalette.model.nodeDataArray = [
-      {key: "Tool", color: "turquoise"},
-      {key: "Cyan", color: "cyan"},
-      {key: "Cyan", color: "cyan"},
-    ]
+    setupPaletteDiagram()
+    setupPaletteNodeData()
   }
 
-  const handleChange = (newCode) => {
-    console.clear()
-    const metadata = parseCode(newCode)
-    //console.log(metadata)
-    setupDiagram(metadata)
+  const addModelListener = () => {
+    diagram.addModelChangedListener((evt) => {
+      generateCode(evt.model.Cc)
+    })
   }
 
-  // on first load of the component
-  useEffect(() => {
+  const generateCode = (json) => {
+    let str = ''
+    console.log("Nodes")
+    let n = json.length
+    if(n > 0) {
+      if(json[n-1].from !== undefined || json[n-1].to !== undefined) {
+        console.log("Link node")
+        let to = json[n-1].to
+        let from = json[n-1].from
+        // search for to node, and place value of from in its relationship.from
+        // fix bug here
+        for(let i=0;i<n;i++){
+          if(json[i].key === to) {
+            json[i].relationship.fromNode = from;
+            break;
+          }
+        }
+      }
+    }
+    console.log(json)
+      json.map(r => {
+        if(r.metamodel !== undefined && r.key !== undefined){
+          str += r.metamodel + " " + r.key;
+          if(r.relationship.fromNode !== r.key && r.relationship.fromNode !== ""){
+            str += " extends " + r.relationship.fromNode
+          }
+          str += " { \n"
+          str += r.properties + "\n"
+          str += "}\n\n"
+        }
+      })
+      //console.clear()
+      //console.log(json)
+      //console.log(str)
+      if(str !== "")
+      document.getElementById('coder').innerText = str
+
+  }
+
+  const setupDiagram = () => {
+    setupUMLDiagram(model)
+    addModelListener()
+  }
+
+  useEffect(()=>{
     console.clear()
-    console.log("asd")
-    const metadata = parseCode(code)
-    //console.log(metadata)
-    setupDiagram(metadata)
+    console.log("setup diagrams")
     setupPalette()
+    setupDiagram()
   })
 
   return (
     <Container fluid>
-      <Navbar bg="dark" variant="dark">
-        <p style={{color: "white"}}>Concerto Schema Language to UML converter</p>
-      </Navbar>
+      <NavBar />
       <Row>
         <Col>
-          <CodeEditor
-            code = {code}
-            onChange = {handleChange}
-          />
+          <div style={{background: '#262624', height: '750px'}}>
+            <article style={{padding: '18px'}}>
+              <code
+                style={{
+                  color: 'white', fontFamily: 'Consolas', fontSize: '15px'
+                }}
+                id="coder">
+                  How to use the editor ? <br/> <br/>
+                  Simply drag and drop the classes of the provided type from the Tool Palette
+                  to the UML diagram area. <br/>
+                  The class diagrams are editable and the names, types and properties can be edited
+                  once they're on the UML diagram area. <br/>
+                  The classes can also be linked to each other to depict relationships. <br/>
+                  The code would be simultaneously generated and updated here, however, it is not editable.
+              </code>
+            </article>
+          </div>
         </Col>
         <Col>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <div
-                id="myPalette" style={{border: 'solid 1px blue',
-                width:'200px', height:'750px'}}>
-                </div>
-              </td>
-              <td>
-                <div
-                id="myDiagramDiv"
-                style={{border: 'solid 1px blue',
-                width:'600px', height:'750px'}}></div>
-              </td>
-            </tr>
-            <tr>
-              <td style={{textAlign:"center"}}><b>Tool Palette</b></td>
-              <td style={{textAlign:"center"}}><b>UML Diagram</b></td>
-            </tr>
-          </tbody>
-        </table>
+          <Diagram
+            model={model}
+            setupPalette={setupPalette}
+            setupDiagram={setupDiagram}
+          />
         </Col>
       </Row>
     </Container>
