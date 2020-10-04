@@ -11,7 +11,7 @@ const CodeEditor = (props) => {
   const options = {
     selectOnLineNumbers: true
   }
-  
+
   return(
     <MonacoEditor
       width="700"

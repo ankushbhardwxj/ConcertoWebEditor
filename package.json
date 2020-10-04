@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@accordproject/concerto-core": "^0.82.7",
     "@projectstorm/react-diagrams": "^6.0.1-beta.7",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

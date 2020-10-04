@@ -15,6 +15,7 @@ export const parse = (code) => {
       line: line,
       metamodel: metamodel,
       metamodelName: metamodelName,
+      key: metamodelName,
       data: data,
       relationship: relationship
     })

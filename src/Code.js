@@ -1,20 +1,19 @@
 export var codeCTO = `
 namespace concerto.metamodel
 
+abstract concept Ankush {
 
-
-abstract concept DecoratorLiteral {
 }
 
-concept DecoratorString identified by DecoratorLiteral {
-  o String value  
+concept Sushmita identified by Ankush {
+  o String value
 }
 
-concept DecoratorNumber extends DecoratorLiteral {
+concept Farzeen extends Ankush {
   o Double value
 }
 
-concept DecoratorBoolean extends DecoratorLiteral {
+concept Debo extends Ankush {
   o Boolean value
 }
 
