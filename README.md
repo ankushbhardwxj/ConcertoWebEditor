@@ -1,11 +1,5 @@
 ## Concerto Model Web Editor 
-This is a prototype for the web editor.
+A magical UML diagram editor which instantaneously generates code in the Concerto Schema Language.
 
-### Discussion
-There was a discussion regarding the project [here](https://github.com/ankingcodes/ConcertoWebEditor/issues/1)
-
-#### Current status
-- This successfully converts any CTO code to a GoJS based class diagram.
-- It just has an application state where all the modifications are done. No need for Redux
-
+Concerto is a lightweight, 100% Javascript schema language and runtime, developed by The Accord Project. It works in both a NodeJS process or in the browser. To learn more about the concerto language, refer to the [official documentation.](https://docs.accordproject.org/docs/model-concerto.html)
 
