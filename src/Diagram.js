@@ -6,18 +6,6 @@ import {diagram} from './gojsHelper'
 import './App.css'
 
 const Diagram = (props) => {
-  const [code, setCode] = useState(codeCTO);
-
-  const cleanDiv = () => {
-    const div = document.getElementById('myDiagramDiv')
-    while(div.firstChild){
-      div.removeChild(div.firstChild)
-    }
-    div.removeAttribute('style')
-    div.style = "border: 1px solid blue; width: 600px; height: 750px;"
-    console.log(div)
-  }
-
   return(
     <table>
       <tbody>

@@ -133,6 +133,3 @@ export const setupUMLDiagram = (metamodel) => {
     linkDataArray: metamodel
   })
 }
-
-
-

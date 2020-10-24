@@ -11,10 +11,13 @@ import {
   setupUMLDiagram,
   diagram, addModelListener
 } from './gojsHelper'
-let c = ""
+import { jsonToCode } from './codegen';
+let jsonMode = false;
+let jsonActive = false, concertoActive = false;
 
 const App = () => {
-  const [model, updateModel] = useState([])
+  const [model, updateModel] = useState([]);
+  const [json, updateJson] = useState(false);
 
   const setupPalette = () => {
     setupPaletteDiagram()
@@ -28,42 +31,13 @@ const App = () => {
   }
 
   const generateCode = (json) => {
-    let str = ''
-    console.log("Nodes")
-    let n = json.length
-    if(n > 0) {
-      if(json[n-1].from !== undefined || json[n-1].to !== undefined) {
-        console.log("Link node")
-        let to = json[n-1].to
-        let from = json[n-1].from
-        // search for to node, and place value of from in its relationship.from
-        // fix bug here
-        for(let i=0;i<n;i++){
-          if(json[i].key === to) {
-            json[i].relationship.fromNode = from;
-            break;
-          }
-        }
-      }
-    }
-    console.log(json)
-      json.map(r => {
-        if(r.metamodel !== undefined && r.key !== undefined){
-          str += r.metamodel + " " + r.key;
-          if(r.relationship.fromNode !== r.key && r.relationship.fromNode !== ""){
-            str += " extends " + r.relationship.fromNode
-          }
-          str += " { \n"
-          str += r.properties + "\n"
-          str += "}\n\n"
-        }
-      })
-      //console.clear()
-      //console.log(json)
-      //console.log(str)
-      if(str !== "")
-      document.getElementById('coder').innerText = str
+    let code;
+    if(jsonMode)
+      code = JSON.stringify(json, null, '\t');
+    else code = jsonToCode(json);
 
+    if(code !== "" && code !== undefined)
+      document.getElementById('coder').innerText = code
   }
 
   const setupDiagram = () => {
@@ -71,16 +45,51 @@ const App = () => {
     addModelListener()
   }
 
+  const handleClick = (e) => {
+    let styleJSON = document.getElementById('button-json').style;
+    let styleConcerto = document.getElementById('button-concerto').style;
+
+    if(e == "json") {
+      if(!jsonActive){
+        styleJSON.backgroundColor = "blue";
+        styleJSON.color = "white";
+        jsonActive = true;
+        jsonMode = true;
+      }
+      else {
+        styleJSON.backgroundColor = "white";
+        styleJSON.color = "black";
+        jsonActive = false;
+        jsonMode = false;
+      }
+    }
+    else {
+      if(!concertoActive) {
+        styleConcerto.backgroundColor = "blue";
+        styleConcerto.color = "white";
+        concertoActive = true;
+        jsonMode = false;
+      } else {
+        styleConcerto.backgroundColor = "white";
+        styleConcerto.color = "black";
+        concertoActive = false;
+        jsonMode = true;
+      }
+    }
+  }
+
   useEffect(()=>{
     console.clear()
-    console.log("setup diagrams")
     setupPalette()
     setupDiagram()
   })
 
+
   return (
     <Container fluid>
       <NavBar />
+      <button id="button-json" onClick={() => handleClick("json")}>Show JSON</button>
+      <button id="button-concerto" onClick={() => handleClick("concerto")}>Show Concerto</button>
       <Row>
         <Col>
           <div style={{background: '#262624', height: '750px'}}>
