@@ -1,7 +1,6 @@
 import React from 'react'
 import MonacoEditor from 'react-monaco-editor';
 import {generateModelFromCode} from "./model"
-import { codeCTO } from './Code'
 
 const CodeEditor = (props) => {
   const editorDidMount = (editor, monaco) => {

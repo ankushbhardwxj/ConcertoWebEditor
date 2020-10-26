@@ -1,35 +1,42 @@
 export const jsonToCode = (json) => {
-  let code;
-  let n = json.length
+  let code="";
   let nodeData = [];
   let linkData = [];
-  console.clear()
-  console.log(json)
+  console.clear();
 
-  if(n > 0) {
-    json.map(obj => {
+  if(json.length > 0) {
+    json.forEach(obj => {
       if(obj.metamodel !== undefined)
         nodeData.push(obj);
       else
         linkData.push(obj)
     })
-    console.log(nodeData)
-    console.log(linkData)
-    /*
-      iterate through nodeData objects, if relationship exists
-      at linkData, then update nodeData else keep it empty
-    */
+    // clear all existing links
+    for(let node of nodeData)
+      node.toNode = null;
+    // set links in actual model
+    for(let link of linkData){
+      let toNode = link.to;
+      let fromNode = link.from;
+      for(let i=0; i<nodeData.length; i++){
+        if(nodeData[i].key === fromNode)
+          nodeData[i].toNode = toNode;
+      }
+    }
   }
 
   // generate JSON to string
-  json.map(r => {
+  nodeData.map(r => {
     if(r.metamodel !== undefined && r.key !== undefined){
       code += r.metamodel + " " + r.key;
-      if(r.relationship.fromNode !== r.key && r.relationship.fromNode !== ""){
-        code += " extends " + r.relationship.fromNode
+      if(r.toNode !== null){
+        code += " extends " + r.toNode;
       }
       code += " { \n"
-      code += "  " + r.properties + "\n"
+      if(r.properties !== undefined){
+        let props = r.properties.split("\n");
+        props.map(r => code+="  " + r + "\n")
+      }
       code += "}\n\n"
     }
   })

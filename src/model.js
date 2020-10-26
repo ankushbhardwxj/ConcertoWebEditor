@@ -1,13 +1,7 @@
-/*
-[{
-  id, lineNumber, line, metamodel, data
-}]
-
-*/
 export const parse = (code) => {
   let metadata = []
   let lines = code.split("\n")
-
+  console.log(lines)
   const addMetadata = (id, lineNumber, line, metamodel, metamodelName, data, relationship) => {
     metadata.push({
       id: id,
@@ -101,8 +95,8 @@ export const parse = (code) => {
         metamodelName = tempLine[pos+1]
         if(identified || extended) {
           relationship = {
-            "from": tempLine[relatnPos+1],
-            "to": tempLine[pos+1]
+            "fromNode": tempLine[relatnPos+1],
+            "toNode": tempLine[pos+1]
           }
         } else relationship = undefined
       }

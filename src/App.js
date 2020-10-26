@@ -3,21 +3,20 @@ import './App.css';
 import CodeEditor from './Editor'
 import { Container, Navbar, Row, Col } from 'react-bootstrap'
 import Diagram from './Diagram'
-import {codeCTO} from './Code'
 import NavBar from './NavBar'
 import {
   setupPaletteDiagram,
   setupPaletteNodeData,
   setupUMLDiagram,
-  diagram, addModelListener
+  diagram, addModelListener, updateGoJS
 } from './gojsHelper'
 import { jsonToCode } from './codegen';
-let jsonMode = false;
-let jsonActive = false, concertoActive = false;
+import { parse } from './model'
 
 const App = () => {
   const [model, updateModel] = useState([]);
-  const [json, updateJson] = useState(false);
+  const [code, updateCode] = useState('');
+  const [initialRender, changeInitial] = useState(false);
 
   const setupPalette = () => {
     setupPaletteDiagram()
@@ -26,18 +25,15 @@ const App = () => {
 
   const addModelListener = () => {
     diagram.addModelChangedListener((evt) => {
+      updateModel(evt.model.Cc);
       generateCode(evt.model.Cc)
     })
   }
 
   const generateCode = (json) => {
-    let code;
-    if(jsonMode)
-      code = JSON.stringify(json, null, '\t');
-    else code = jsonToCode(json);
-
-    if(code !== "" && code !== undefined)
-      document.getElementById('coder').innerText = code
+    let newCode;
+    newCode = jsonToCode(json);
+    updateCode(newCode);
   }
 
   const setupDiagram = () => {
@@ -46,44 +42,24 @@ const App = () => {
   }
 
   const handleClick = (e) => {
-    let styleJSON = document.getElementById('button-json').style;
-    let styleConcerto = document.getElementById('button-concerto').style;
+  }
 
-    if(e == "json") {
-      if(!jsonActive){
-        styleJSON.backgroundColor = "blue";
-        styleJSON.color = "white";
-        jsonActive = true;
-        jsonMode = true;
-      }
-      else {
-        styleJSON.backgroundColor = "white";
-        styleJSON.color = "black";
-        jsonActive = false;
-        jsonMode = false;
-      }
-    }
-    else {
-      if(!concertoActive) {
-        styleConcerto.backgroundColor = "blue";
-        styleConcerto.color = "white";
-        concertoActive = true;
-        jsonMode = false;
-      } else {
-        styleConcerto.backgroundColor = "white";
-        styleConcerto.color = "black";
-        concertoActive = false;
-        jsonMode = true;
-      }
-    }
+  const generateModel = code => {
+    const newModel = parse(code);
+    updateModel(newModel);
+    console.log(model)
+    console.log(newModel)
+  }
+
+  const onCodeChange = code => {
+    generateModel(code);
   }
 
   useEffect(()=>{
     console.clear()
     setupPalette()
     setupDiagram()
-  })
-
+  }, [initialRender])
 
   return (
     <Container fluid>
@@ -92,23 +68,10 @@ const App = () => {
       <button id="button-concerto" onClick={() => handleClick("concerto")}>Show Concerto</button>
       <Row>
         <Col>
-          <div style={{background: '#262624', height: '750px'}}>
-            <article style={{padding: '18px'}}>
-              <code
-                style={{
-                  color: 'white', fontFamily: 'Consolas', fontSize: '15px'
-                }}
-                id="coder">
-                  How to use the editor ? <br/> <br/>
-                  Simply drag and drop the classes of the provided type from the Tool Palette
-                  to the UML diagram area. <br/>
-                  The class diagrams are editable and the names, types and properties can be edited
-                  once they're on the UML diagram area. <br/>
-                  The classes can also be linked to each other to depict relationships. <br/>
-                  The code would be simultaneously generated and updated here, however, it is not editable.
-              </code>
-            </article>
-          </div>
+          <CodeEditor
+            code={code}
+            onChange={onCodeChange}
+          />
         </Col>
         <Col>
           <Diagram

@@ -42,31 +42,31 @@ export const setupPaletteNodeData = () => {
       {
         metamodel: "concept",
         key: "conceptName",
-        relationship: {fromNode:"", toNode:""},
+        toNode: null,
         properties: "// add property"
       },
       {
         metamodel: "asset",
         key: "assetName",
-        relationship: {fromNode:"", toNode:""},
+        toNode: null,
         properties: "// add property"
       },
       {
         metamodel: "transaction",
         key: "newTransaction",
-        relationship: {fromNode:"", toNode:""},
+        toNode: null,
         properties: "// add property"
       },
       {
         metamodel: "participant",
         key: "newParticipant",
-        relationship: {fromNode:"", toNode:""},
+        toNode: null,
         properties: "// add property"
       },
       {
         metamodel: "enum",
         key: "newEnum",
-        relationship: {fromNode:"", toNode:""},
+        toNode: null,
         properties: "// add property"
       }
     ]
@@ -126,6 +126,15 @@ export const setupUMLDiagram = (metamodel) => {
         new go.Binding("stroke", "black"),
         new go.Binding("strokeWidth", 2)))
 
+  diagram.model = $(go.GraphLinksModel, {
+    copiesArrays: true,
+    copiesArrayObjects: true,
+    nodeDataArray: metamodel,
+    linkDataArray: metamodel
+  })
+}
+
+export const updateGoJS = (metamodel) => {
   diagram.model = $(go.GraphLinksModel, {
     copiesArrays: true,
     copiesArrayObjects: true,
