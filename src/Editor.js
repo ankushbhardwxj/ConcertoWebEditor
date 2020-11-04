@@ -1,6 +1,6 @@
 import React from 'react'
 import MonacoEditor from 'react-monaco-editor';
-import {generateModelFromCode} from "./model"
+import { generateModelFromCode } from "./model"
 
 const CodeEditor = (props) => {
   const editorDidMount = (editor, monaco) => {
@@ -11,7 +11,7 @@ const CodeEditor = (props) => {
     selectOnLineNumbers: true
   }
 
-  return(
+  return (
     <MonacoEditor
       width="700"
       height="752"

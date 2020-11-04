@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import CodeEditor from './Editor'
 import { Container, Navbar, Row, Col } from 'react-bootstrap'
@@ -55,7 +55,7 @@ const App = () => {
     generateModel(code);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     console.clear()
     setupPalette()
     setupDiagram()

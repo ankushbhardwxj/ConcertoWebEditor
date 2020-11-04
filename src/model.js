@@ -26,7 +26,7 @@ export const parse = (code) => {
     lineNumber = idx + 1;
     line = element;
     //if(line.split(" ")[0] == "asset") console.log(line)
-      /****** comments ******/
+    /****** comments ******/
     if (line.search("//") !== -1) {
       metamodel = "comment"
       data = line;
@@ -38,21 +38,21 @@ export const parse = (code) => {
       addMetadata(id++, lineNumber, line, metamodel, data)
     } else if (line.search("import") !== -1 &&
       /****** import ******/
-      line.split(" ")[0] === "import"){
-        metamodel = "import"
-        if(line.search("from")!==-1){
-          let tempLine = line.split(" ")
-          data = {
-            "importedModule": tempLine[1],
-            "dependency": tempLine[3]
-          }
-        } else {
-          data = line.split(" ")[1]
+      line.split(" ")[0] === "import") {
+      metamodel = "import"
+      if (line.search("from") !== -1) {
+        let tempLine = line.split(" ")
+        data = {
+          "importedModule": tempLine[1],
+          "dependency": tempLine[3]
         }
-        addMetadata(id++, lineNumber, line, metamodel, undefined, data)
+      } else {
+        data = line.split(" ")[1]
+      }
+      addMetadata(id++, lineNumber, line, metamodel, undefined, data)
     } else if (line.search("@") !== -1) {
       /****** decorators ******/
-      metamodel="decorators"
+      metamodel = "decorators"
       addMetadata(id++, lineNumber, line, metamodel, undefined, line)
     } else if (line.search("{") !== -1) {
       /****** classes and relationships ******/
@@ -60,50 +60,50 @@ export const parse = (code) => {
       openingLine = line
       openingLineNumber = lineNumber
       // check for abstract
-      if(tempLine.includes("abstract")){
+      if (tempLine.includes("abstract")) {
         isAbstract = true;
         var pos = tempLine.indexOf("abstract")
-        metamodel = tempLine[pos] + " " + tempLine[pos+1]
+        metamodel = tempLine[pos] + " " + tempLine[pos + 1]
         metamodelName = tempLine[pos + 2]
-        if(tempLine.includes("{")) bracketOpen = true;
+        if (tempLine.includes("{")) bracketOpen = true;
       }
       // check for concept and relationships
-      else if(tempLine.includes("concept")
-      || tempLine.includes("asset")
-      || tempLine.includes("participant")
-      || tempLine.includes("transaction")
-      || tempLine.includes("enum")) {
+      else if (tempLine.includes("concept")
+        || tempLine.includes("asset")
+        || tempLine.includes("participant")
+        || tempLine.includes("transaction")
+        || tempLine.includes("enum")) {
         isConcept = true;
         var identified = false
         var extended = false
         var pos, relatnPos;
-        if(tempLine.includes("{")) bracketOpen = true;
-        if(tempLine.includes("concept")) pos = tempLine.indexOf("concept")
-        else if(tempLine.includes("asset")) pos = tempLine.indexOf("asset")
-        else if(tempLine.includes("participant")) pos = tempLine.indexOf("participant")
-        else if(tempLine.includes("transaction")) pos = tempLine.indexOf("transaction")
-        else if(tempLine.includes("enum")) pos = tempLine.indexOf("enum")
+        if (tempLine.includes("{")) bracketOpen = true;
+        if (tempLine.includes("concept")) pos = tempLine.indexOf("concept")
+        else if (tempLine.includes("asset")) pos = tempLine.indexOf("asset")
+        else if (tempLine.includes("participant")) pos = tempLine.indexOf("participant")
+        else if (tempLine.includes("transaction")) pos = tempLine.indexOf("transaction")
+        else if (tempLine.includes("enum")) pos = tempLine.indexOf("enum")
 
-        if(tempLine.includes("identified")) {
+        if (tempLine.includes("identified")) {
           identified = true
           relatnPos = tempLine.indexOf("identified") + 1
-        } else if(tempLine.includes("extends")) {
+        } else if (tempLine.includes("extends")) {
           extended = true
           relatnPos = tempLine.indexOf("extends")
         }
         metamodel = tempLine[pos]
-        metamodelName = tempLine[pos+1]
-        if(identified || extended) {
+        metamodelName = tempLine[pos + 1]
+        if (identified || extended) {
           relationship = {
-            "fromNode": tempLine[relatnPos+1],
-            "toNode": tempLine[pos+1]
+            "fromNode": tempLine[relatnPos + 1],
+            "toNode": tempLine[pos + 1]
           }
         } else relationship = undefined
       }
     }
     // adding properties of abstract concept to the model
     // TODO: make separate function for both abstract and concept
-    if(bracketOpen && isAbstract && line.search("}") !== -1){
+    if (bracketOpen && isAbstract && line.search("}") !== -1) {
       data = {
         "properties": properties
       }
@@ -111,7 +111,7 @@ export const parse = (code) => {
       isAbstract = false
       bracketOpen = false
       addMetadata(id++, openingLineNumber, openingLine, metamodel, metamodelName, data)
-    } else if(bracketOpen && isAbstract && line.trim("o")[0] == "o" ) {
+    } else if (bracketOpen && isAbstract && line.trim("o")[0] == "o") {
       properties.push({
         "property": line.trim(" "),
         "lineNumber": lineNumber
@@ -119,7 +119,7 @@ export const parse = (code) => {
     }
 
     // adding properties of concept to the model
-    if(bracketOpen && isConcept && line.search("}") !== -1){
+    if (bracketOpen && isConcept && line.search("}") !== -1) {
       data = {
         "properties": properties
       }
@@ -127,10 +127,10 @@ export const parse = (code) => {
       isConcept = false
       bracketOpen = false
       addMetadata(id++, openingLineNumber, openingLine, metamodel, metamodelName, data, relationship)
-    } else if(bracketOpen && isConcept && line.trim(" ")[0] == "o") {
+    } else if (bracketOpen && isConcept && line.trim(" ")[0] == "o") {
       properties.push({
-          "property": line.trim(" "),
-          "lineNumber": lineNumber
+        "property": line.trim(" "),
+        "lineNumber": lineNumber
       })
     }
   });
