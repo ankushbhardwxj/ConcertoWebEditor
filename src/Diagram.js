@@ -24,7 +24,7 @@ const Diagram = (props) => {
               onChange={props.onChange}
               style={{
                 border: 'solid 1px black',
-                width: '600px', height: '750px'
+                width: '550px', height: '750px'
               }}></div>
           </td>
         </tr>
