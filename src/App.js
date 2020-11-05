@@ -14,9 +14,8 @@ import { jsonToCode } from './codegen';
 import { parse } from './model'
 
 const App = () => {
-  const [model, updateModel] = useState([]);
+  const [model, updateModel] = useState([{ key: "A", metamodel: "concept", properties: "nothing", toNode: null }]);
   const [code, updateCode] = useState('');
-  const [initialRender, changeInitial] = useState(false);
 
   const setupPalette = () => {
     setupPaletteDiagram()
@@ -32,6 +31,7 @@ const App = () => {
 
   const generateCode = (json) => {
     let newCode;
+    console.log(json)
     newCode = jsonToCode(json);
     updateCode(newCode);
   }
@@ -48,10 +48,11 @@ const App = () => {
     const newModel = parse(code);
     updateModel(newModel);
     console.log(model)
-    console.log(newModel)
+    //updateGoJS(newModel);
   }
 
   const onCodeChange = code => {
+    updateCode(code);
     generateModel(code);
   }
 
@@ -59,7 +60,7 @@ const App = () => {
     console.clear()
     setupPalette()
     setupDiagram()
-  }, [initialRender])
+  }, [])
 
   return (
     <Container fluid>

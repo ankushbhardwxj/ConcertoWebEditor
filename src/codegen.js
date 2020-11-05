@@ -3,6 +3,7 @@ export const jsonToCode = (json) => {
   let nodeData = [];
   let linkData = [];
   console.clear();
+  console.log(json)
 
   if (json.length > 0) {
     json.forEach(obj => {
