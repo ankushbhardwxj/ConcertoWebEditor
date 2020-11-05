@@ -4,8 +4,8 @@ export const parse = (code) => {
   // add node data
   const addMetadata = (key, metamodel, properties) => {
     metadata.push({
-      key: key,
       metamodel: metamodel,
+      key: key,
       toNode: null,
       properties: properties,
     })
@@ -15,7 +15,7 @@ export const parse = (code) => {
   const addRelationship = (fromNode, toNode) => {
     metadata.push({
       from: fromNode,
-      to: toNode
+      to: toNode,
     })
   }
 
@@ -23,7 +23,7 @@ export const parse = (code) => {
   let properties = "";
   let bracketOpen = false;
   lines.forEach(ele => {
-    let line = ele.trim(" ");
+    let line = ele.trim();
     line = line.split(" ");
     let pos = 0;
     if (!bracketOpen) {
@@ -33,6 +33,27 @@ export const parse = (code) => {
         metamodel = line[pos];
         key = line[pos + 1];
       }
+      if (line.includes('transaction')) {
+        pos = line.indexOf('transaction');
+        metamodel = line[pos];
+        key = line[pos + 1];
+      }
+      if (line.includes('asset')) {
+        pos = line.indexOf('asset');
+        metamodel = line[pos];
+        key = line[pos + 1];
+      }
+      if (line.includes('participant')) {
+        pos = line.indexOf('participant');
+        metamodel = line[pos];
+        key = line[pos + 1];
+      }
+      if (line.includes('enum')) {
+        pos = line.indexOf('enum');
+        metamodel = line[pos];
+        key = line[pos + 1];
+      }
+
       if (line.includes('extends')) {
         let relationKeywordIdx = line.indexOf('extends');
         toNode = line[relationKeywordIdx + 1];
@@ -50,14 +71,13 @@ export const parse = (code) => {
       }
       if (line.includes('}')) {
         bracketOpen = false;
+        if (key != undefined && metamodel != undefined)
+          addMetadata(key, metamodel, properties);
+        if (fromNode != undefined && toNode != undefined)
+          addRelationship(fromNode, toNode);
+        properties = "";
       }
     }
   })
-  if (fromNode != undefined && toNode != undefined) {
-    addRelationship(fromNode, toNode);
-  }
-  if (key != undefined && metamodel != undefined) {
-    addMetadata(key, metamodel, properties);
-  }
   return metadata;
 }

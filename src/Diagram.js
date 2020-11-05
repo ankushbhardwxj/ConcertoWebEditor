@@ -13,7 +13,7 @@ const Diagram = (props) => {
           <td>
             <div
               id="myPalette" style={{
-                border: 'solid 1px blue',
+                border: 'solid 1px black',
                 width: '200px', height: '750px'
               }}>
             </div>
@@ -23,7 +23,7 @@ const Diagram = (props) => {
               id="myDiagramDiv"
               onChange={props.onChange}
               style={{
-                border: 'solid 1px blue',
+                border: 'solid 1px black',
                 width: '600px', height: '750px'
               }}></div>
           </td>
