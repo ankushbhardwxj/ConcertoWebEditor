@@ -3,7 +3,6 @@ const $ = go.GraphObject.make
 export var myPalette, diagram;
 
 export const setupPaletteDiagram = () => {
-  console.log(go)
   myPalette = $(go.Palette, "myPalette")
   myPalette.nodeTemplate = $(go.Node, "Auto", {
   }, $(go.Shape, { fill: "lightyellow" }),

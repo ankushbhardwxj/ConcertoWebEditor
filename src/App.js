@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import CodeEditor from './Editor';
-import { Container, Navbar, Row, Col } from 'react-bootstrap';
 import Diagram from './Diagram';
 import NavBar from './NavBar';
 import {
@@ -12,12 +11,13 @@ import {
 } from './gojsHelper';
 import { jsonToCode } from './codegen';
 import { parse } from './model';
-import { Grid, Segment } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
 
 const App = () => {
   const [model, updateModel] = useState([]);
   const [code, updateCode] = useState('');
   const [codeChange, flipCodeChange] = useState(false);
+  const [codegen, changeCodeGen] = useState('');
   const [firstRender] = useState(null);
 
   // on model change
@@ -52,7 +52,6 @@ const App = () => {
   const generateModel = code => {
     const newModel = parse(code);
     updateModel(newModel);
-    //updateGoJS(newModel);
   }
 
   // diagram render
@@ -71,8 +70,13 @@ const App = () => {
     updateGoJS(dupModel);
   }
 
+  const handleDropDown = (e, evt) => {
+    changeCodeGen(evt.value);
+  }
+
   useEffect(() => {
-  }, [model])
+    console.log(codegen);
+  }, [codegen])
 
   useEffect(() => {
     console.clear()
@@ -82,14 +86,14 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <NavBar />
+      <NavBar dropDown={handleDropDown} click={handleUpdate} />
       <Grid columns={2}>
         <Grid.Column width={7}>
           <CodeEditor
             code={code}
             onChange={onCodeChange}
           />
-          <button onClick={handleUpdate} id="update">Update</button>
+          {/* <button onClick={handleUpdate} id="update">Update</button> */}
         </Grid.Column>
         <Grid.Column width={8}>
           <Diagram
