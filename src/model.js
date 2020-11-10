@@ -65,7 +65,7 @@ export const parse = (code) => {
     } else {
       // get properties
       if (line.includes('o') || line.includes('-->')) {
-        properties += "\t";
+        properties += "  ";
         line.forEach(token => properties += (token + " "));
         properties += "\n";
       }
@@ -75,6 +75,13 @@ export const parse = (code) => {
           addMetadata(key, metamodel, properties);
         if (fromNode != undefined && toNode != undefined)
           addRelationship(fromNode, toNode);
+        // reformat property string
+        for (let i = 0; i < metadata.length; i++) {
+          if (metadata[i].properties !== undefined) {
+            metadata[i].properties = (metadata[i].properties.trim());
+            metadata[i].properties = "  " + metadata[i].properties
+          }
+        }
         properties = "";
       }
     }

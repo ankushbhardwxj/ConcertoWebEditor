@@ -1,39 +1,29 @@
-import React, { useEffect, useState } from "react"
-import { codeCTO } from './Code'
-import { parse } from './model'
-import * as go from 'gojs';
-import { diagram } from './gojsHelper'
-import './App.css'
+import React from "react";
+import { Grid } from "semantic-ui-react";
 
 const Diagram = (props) => {
   return (
-    <table>
-      <tbody>
-        <tr>
-          <td>
-            <div
-              id="myPalette" style={{
-                border: 'solid 1px black',
-                width: '200px', height: '750px'
-              }}>
-            </div>
-          </td>
-          <td >
-            <div
-              id="myDiagramDiv"
-              onChange={props.onChange}
-              style={{
-                border: 'solid 1px black',
-                width: '550px', height: '750px'
-              }}></div>
-          </td>
-        </tr>
-        <tr>
-          <td style={{ textAlign: "center" }}><b>Tool Palette</b></td>
-          <td style={{ textAlign: "center" }}><b>UML Diagram</b></td>
-        </tr>
-      </tbody>
-    </table>
+    <Grid columns={2}>
+      <Grid.Column width={4}>
+        <div
+          id="myPalette" style={{
+            border: 'solid 1px black',
+            width: '200px', height: '652px',
+            background: '#a1a1a1'
+          }}>
+        </div>
+      </Grid.Column>
+      <Grid.Column width={4}>
+        <div
+          id="myDiagramDiv"
+          onChange={props.onChange}
+          style={{
+            border: 'solid 1px black',
+            width: '550px', height: '652px',
+            background: '#9e9e9e'
+          }}></div>
+      </Grid.Column>
+    </Grid>
   )
 }
 

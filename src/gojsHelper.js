@@ -3,11 +3,9 @@ const $ = go.GraphObject.make
 export var myPalette, diagram;
 
 export const setupPaletteDiagram = () => {
+  console.log(go)
   myPalette = $(go.Palette, "myPalette")
   myPalette.nodeTemplate = $(go.Node, "Auto", {
-    locationSpot: go.Spot.Center,
-    fromSpot: go.Spot.TopCenter,
-    toSpot: go.Spot.AllSides
   }, $(go.Shape, { fill: "lightyellow" }),
     $(go.Panel, "Table", { defaultRowSeparatorStroke: "black" },
       // header

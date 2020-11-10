@@ -12,6 +12,7 @@ import {
 } from './gojsHelper';
 import { jsonToCode } from './codegen';
 import { parse } from './model';
+import { Grid, Segment } from 'semantic-ui-react';
 
 const App = () => {
   const [model, updateModel] = useState([]);
@@ -71,9 +72,6 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log("Change in model");
-    console.log(model)
-    console.log(codeChange);
   }, [model])
 
   useEffect(() => {
@@ -83,27 +81,25 @@ const App = () => {
   }, [firstRender])
 
   return (
-    <Container fluid>
+    <React.Fragment>
       <NavBar />
-      {/* <button id="button-json" onClick={() => handleClick("json")}>Show JSON</button>
-      <button id="button-concerto" onClick={() => handleClick("concerto")}>Show Concerto</button> */}
-      <Row>
-        <Col>
+      <Grid columns={2}>
+        <Grid.Column width={7}>
           <CodeEditor
             code={code}
             onChange={onCodeChange}
           />
           <button onClick={handleUpdate} id="update">Update</button>
-        </Col>
-        <Col>
+        </Grid.Column>
+        <Grid.Column width={8}>
           <Diagram
             model={model}
             setupPalette={setupPalette}
             setupDiagram={setupDiagram}
           />
-        </Col>
-      </Row>
-    </Container>
+        </Grid.Column>
+      </Grid>
+    </React.Fragment>
   );
 }
 
