@@ -17,24 +17,39 @@ const App = () => {
   const [model, updateModel] = useState([]);
   const [code, updateCode] = useState('');
   const [codeChange, flipCodeChange] = useState(false);
-  const [codegen, changeCodeGen] = useState('');
+  const [codegen, changeCodeGen] = useState('Concerto');
   const [firstRender] = useState(null);
 
   // on model change
   const addModelListener = () => {
-    diagram.addModelChangedListener((evt) => {
+    diagram.addModelChangedListener(evt => {
       // this runs every time a diagram updates
       if (!codeChange) {
         let newModel = evt.model.Cc;
         if (newModel != model) {
-          updateModel(newModel);
-          generateCode(newModel);
-          flipCodeChange(!codeChange);
+          if (codegen != 'JSON') {
+            updateModel(newModel);
+            generateCode(newModel);
+            flipCodeChange(!codeChange);
+          } else {
+            updateModel(newModel);
+            generateJSONCode(newModel);
+            flipCodeChange(!codeChange);
+          }
         } else {
-          generateCode(newModel);
+          if (codegen != 'JSON') {
+            generateCode(newModel);
+          } else {
+            generateJSONCode(newModel);
+          }
         }
       }
     })
+  }
+
+  const generateJSONCode = model => {
+    let jsonCode = JSON.stringify(model, null, 2);
+    updateCode(jsonCode);
   }
 
   const generateCode = (json) => {
@@ -70,19 +85,22 @@ const App = () => {
     updateGoJS(dupModel);
   }
 
+  // handle dropdown changes
   const handleDropDown = (e, evt) => {
-    changeCodeGen(evt.value);
+    changeCodeGen(String(evt.value));
   }
-
-  useEffect(() => {
-    console.log(codegen);
-  }, [codegen])
 
   useEffect(() => {
     console.clear()
     setupPalette()
     setupDiagram()
   }, [firstRender])
+
+  useEffect(() => {
+    if (codegen == 'JSON') generateJSONCode(model);
+    else generateCode(model);
+    addModelListener()
+  }, [codegen])
 
   return (
     <React.Fragment>

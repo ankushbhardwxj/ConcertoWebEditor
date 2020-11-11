@@ -7,10 +7,9 @@ const NavBar = (props) => {
     <Navbar bg="dark" variant="dark">
       <h3 style={{ color: "white" }}>Concerto Schema Language to UML converter</h3>
       <Button style={{ marginLeft: '25px', marginBottom: '8px' }}
-        size='sm'
         onClick={props.click}
         variant="light">
-        Update Diagram
+        <b>Update Diagram</b>
       </Button>
       <Dropdown
         style={{ marginLeft: '24px', marginBottom: '4px' }}
