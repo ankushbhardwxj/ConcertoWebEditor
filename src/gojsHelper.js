@@ -132,11 +132,11 @@ export const setupUMLDiagram = (metamodel) => {
   })
 }
 
-export const updateGoJS = (metamodel) => {
+export const updateGoJS = (nodeData, linkData) => {
   diagram.model = $(go.GraphLinksModel, {
     copiesArrays: true,
     copiesArrayObjects: true,
-    nodeDataArray: metamodel,
-    linkDataArray: metamodel
+    nodeDataArray: nodeData,
+    linkDataArray: linkData
   })
 }

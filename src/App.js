@@ -82,7 +82,18 @@ const App = () => {
 
   const handleUpdate = () => {
     let dupModel = model;
-    updateGoJS(dupModel);
+    let nodeData = [];
+    let linkData = [];
+    // break model into linkData & nodeData
+    dupModel.forEach(r => {
+      if (Object.keys(r).includes('from')) linkData.push(r);
+      else nodeData.push(r);
+    })
+    // remove keys from linkData
+    linkData.forEach(r => {
+      r.key = "";
+    })
+    updateGoJS(nodeData, linkData);
   }
 
   // handle dropdown changes
