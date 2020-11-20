@@ -1,4 +1,5 @@
-## Concerto Model Web Editor 
+[![accord project](https://img.shields.io/badge/powered%20by-accord%20project-19C6C8.svg)](https://www.accordproject.org/)
+
 A magical UML diagram editor which instantaneously generates code in the Concerto Schema Language.
 
 Concerto is a lightweight, 100% Javascript schema language and runtime, developed by The Accord Project. It works in both a NodeJS process or in the browser. To learn more about the concerto language, refer to the [official documentation.](https://docs.accordproject.org/docs/model-concerto.html)

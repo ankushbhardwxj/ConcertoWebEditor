@@ -26,6 +26,7 @@ const App = () => {
       // this runs every time a diagram updates
       if (!codeChange) {
         let newModel = evt.model.Cc;
+        console.log(newModel);
         if (newModel != model) {
           if (codegen != 'JSON') {
             updateModel(newModel);
@@ -90,9 +91,7 @@ const App = () => {
       else nodeData.push(r);
     })
     // remove keys from linkData
-    linkData.forEach(r => {
-      r.key = "";
-    })
+    linkData.forEach(r => { r.key = ""; })
     updateGoJS(nodeData, linkData);
   }
 
