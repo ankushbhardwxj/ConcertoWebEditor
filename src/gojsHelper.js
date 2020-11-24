@@ -192,7 +192,7 @@ export const setupFlowChartDiagram = (model) => {
     }
   }
 
-  diagram.nodeTemplateMap.add("",
+  diagram.nodeTemplateMap.add("Statement",
     $(go.Node, "Table", nodeStyle(),
       $(go.Panel, "Auto",
         $(go.Shape, "Rectangle",
@@ -280,7 +280,7 @@ export const setupFlowChartDiagram = (model) => {
 
   diagram.nodeTemplateMap.add("Comment",
     $(go.Node, "Auto", nodeStyle(),
-      $(go.Shape, "File",
+      $(go.Shape, "Rectangle",
         { fill: "#282c34", stroke: "#DEE0A3", strokeWidth: 3 }),
       $(go.TextBlock, textStyle(),
         {
@@ -290,11 +290,15 @@ export const setupFlowChartDiagram = (model) => {
           textAlign: "center",
           editable: true
         },
-        new go.Binding("text").makeTwoWay())
+        new go.Binding("text").makeTwoWay()),
+      makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
+      makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+      makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+      makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
     ));
 
   diagram.linkTemplate =
-    $(go.Link,  // the whole link panel
+    $(go.Link,
       {
         routing: go.Link.AvoidsNodes,
         curve: go.Link.JumpOver,
@@ -303,25 +307,24 @@ export const setupFlowChartDiagram = (model) => {
         relinkableTo: true,
         reshapable: true,
         resegmentable: true,
-        // mouse-overs subtly highlight links:
         mouseEnter: function (e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
         mouseLeave: function (e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
         selectionAdorned: false
       },
       new go.Binding("points").makeTwoWay(),
-      $(go.Shape,  // the highlight shape, normally transparent
+      $(go.Shape,
         { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-      $(go.Shape,  // the link path shape
+      $(go.Shape,
         { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
         new go.Binding("stroke", "isSelected", function (sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-      $(go.Shape,  // the arrowhead
+      $(go.Shape,
         { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-      $(go.Panel, "Auto",  // the link label, normally not visible
+      $(go.Panel, "Auto",
         { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
         new go.Binding("visible", "visible").makeTwoWay(),
-        $(go.Shape, "RoundedRectangle",  // the label shape
+        $(go.Shape, "RoundedRectangle",
           { fill: "#F8F8F8", strokeWidth: 0 }),
-        $(go.TextBlock, "Yes",  // the label
+        $(go.TextBlock, "Yes",
           {
             textAlign: "center",
             font: "10pt helvetica, arial, sans-serif",
@@ -339,21 +342,34 @@ export const setupFlowChartDiagram = (model) => {
     linkFromPortIdProperty: "fromPort",
     linkToPortIdProperty: "toPort",
     nodeDataArray: [
-      { "category": "Comment", "loc": "360 -10", "text": "Kookie Brittle", "key": -13 },
-      { "key": -1, "category": "Start", "loc": "175 0", "text": "Start" },
-      { "key": 0, "loc": "-5 75", "text": "Preheat oven to 375 F" },
-      { "key": 1, "loc": "175 100", "text": "In a bowl, blend: 1 cup margarine, 1.5 teaspoon vanilla, 1 teaspoon salt" },
-      { "key": 2, "category": "Conditional", "text": "max > sum" }
     ],
     linkDataArray: [
-      { "from": 1, "to": 2, "fromPort": "B", "toPort": "T" },
-      { "from": 2, "to": 3, "fromPort": "B", "toPort": "T" },
-      { "from": -1, "to": 0, "fromPort": "B", "toPort": "T" },
-      { "from": -1, "to": 1, "fromPort": "B", "toPort": "T" },
     ],
   })
 }
 
 export const setupFlowChartPalette = () => {
-  console.log("palette")
+  function animateFadeDown(e) {
+    var diagram = e.diagram;
+    var animation = new go.Animation();
+    animation.isViewportUnconstrained = true; // So Diagram positioning rules let the animation start off-screen
+    animation.easing = go.Animation.EaseOutExpo;
+    animation.duration = 900;
+    // Fade "down", in other words, fade in from above
+    animation.add(diagram, 'position', diagram.position.copy().offset(0, 200), diagram.position);
+    animation.add(diagram, 'opacity', 0, 1);
+    animation.start();
+  }
+  myPalette = $(go.Palette, "myPalette", {
+    "animationManager.initialAnimationStyle": go.AnimationManager.None,
+    "InitialAnimationStarting": animateFadeDown,
+    nodeTemplateMap: diagram.nodeTemplateMap,
+    model: new go.GraphLinksModel([
+      { category: "Start", text: "Start" },
+      { category: "Statement", text: "Step" },
+      { category: "Conditional", text: "condition" },
+      { category: "End", text: "End" },
+      { category: "Comment", text: "I/O" }
+    ])
+  })
 }
