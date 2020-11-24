@@ -1,6 +1,7 @@
 import * as go from 'gojs'
 const $ = go.GraphObject.make
 export var myPalette, diagram;
+export var myDiagram;
 
 export const setupPaletteDiagram = () => {
   myPalette = $(go.Palette, "myPalette")
@@ -138,5 +139,14 @@ export const updateGoJS = (nodeData, linkData) => {
     copiesArrayObjects: true,
     nodeDataArray: nodeData,
     linkDataArray: linkData
+  })
+}
+
+export const setupFlowChart = () => {
+  var $ = go.GraphObject.make;
+  myDiagram = $(go.Diagram, 'myDiagramDiv', {
+    'LinkDrawn': 'showLinkLabel',
+    'LinkRelinked': 'showLinkLabel',
+    'undoManager.isEnabled': true
   })
 }
