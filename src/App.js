@@ -126,6 +126,8 @@ const App = () => {
         <Grid.Column width={8}>
           <Diagram
             model={model}
+            paletteClass='myPalette'
+            diagramClass='myDiagramDiv'
             setupPalette={setupPalette}
             setupDiagram={setupDiagram}
           />

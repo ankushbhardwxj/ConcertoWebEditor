@@ -6,7 +6,7 @@ const Diagram = (props) => {
     <Grid columns={2}>
       <Grid.Column width={4}>
         <div
-          id="myPalette" style={{
+          id={props.paletteClass} style={{
             border: 'solid 1px black',
             width: '200px', height: '652px',
             background: '#a1a1a1'
@@ -15,7 +15,7 @@ const Diagram = (props) => {
       </Grid.Column>
       <Grid.Column width={4}>
         <div
-          id="myDiagramDiv"
+          id={props.diagramClass}
           onChange={props.onChange}
           style={{
             border: 'solid 1px black',

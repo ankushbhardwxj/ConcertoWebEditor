@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import CodeEditor from './Editor';
 import Diagram from './Diagram';
-import NavBar from './NavBar';
 import {
   setupPaletteDiagram,
   setupPaletteNodeData,
   setupUMLDiagram,
-  diagram, updateGoJS
+  diagram,
 } from './gojsHelper';
 import { Grid } from 'semantic-ui-react';
 import Highlight from 'react-highlight.js';
 
-const Json = props => {
+const Json = () => {
   const [model, updateModel] = useState([]);
   const [code, updateCode] = useState('');
   const addModelListener = () => {
@@ -69,6 +67,8 @@ const Json = props => {
         <Grid.Column width={8}>
           <Diagram
             model={model}
+            paletteClass='myPalette'
+            diagramClass='myDiagramDiv'
             setupPalette={setupPalette}
             setupDiagram={setupDiagram}
           />
