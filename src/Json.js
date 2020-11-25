@@ -37,7 +37,9 @@ const Json = () => {
       }
       return newObj;
     })
-    let jsonCode = JSON.stringify(newModel, null, 2);
+    let finalModel = { model: [] };
+    finalModel.model = newModel;
+    let jsonCode = JSON.stringify(finalModel, null, 2);
     updateCode(jsonCode);
   }
 
