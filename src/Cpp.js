@@ -16,13 +16,14 @@ const Cpp = props => {
   const addModelListener = () => {
     diagram.addModelChangedListener(evt => {
       let newModel = evt.model.Cc;
-      console.log(newModel);
+      //console.log(newModel);
       generateCppCode(newModel);
     })
   }
 
   const generateCppCode = (model) => {
     let str = "";
+    let tab = "  ";
     let header = "#include<bits/stdc++.h>";
     let namespace = "using namespace std;";
     str += (header + "\n" + namespace + "\n\n");
@@ -57,14 +58,56 @@ const Cpp = props => {
               else
                 str += (`${op};\n`);
             })
+            // take inputs using "Declare: a, b
           } else if (inputs[0].startsWith('Declare')) {
-            str += (`  auto `);
-            let input = inputs[1].split(',');
+            let dataStructures = {
+              int: [],
+              float: [],
+              double: [],
+              string: [],
+              vector: [],
+              set: [],
+              map: [],
+              list: [],
+              queue: [],
+              deque: [],
+              pair: [],
+              auto: []
+            }
+            let input = inputs[1].split(', ');
+            // check the length of each input, if 1 then create it using auto, else add given data structure
             input.forEach((ip, idx) => {
-              if (idx !== input.length - 1)
-                str += (`${ip}, `);
-              else
-                str += (`${ip}`);
+              ip = ip.trim();
+              // break by space, if still one element then push to auto
+              let [datatype, variable] = ip.split(" ");
+              if(variable == undefined)
+                dataStructures.auto.push(datatype);
+              if(datatype !== undefined && variable !== undefined){
+                // if data type is vector
+                let datatypes = ['int', 'float', 'double','string','vector', 'set', 'map', 'queue', 
+                  'stack', 'list', 'pair', 'deque'];
+                datatypes.forEach(dt => {
+                  if(datatype.startsWith(dt)) 
+                    dataStructures[dt].push({type: datatype, variable: variable})
+                })
+              }
+            })
+            // traverse each property of the dataStructure object and create given variables 
+            //console.log(Object.entries(dataStructures));
+            Object.entries(dataStructures).forEach(r => {
+              let defs = r[1];
+              if(r[0] == "auto"){
+                str += (tab + `auto `);
+                r[1].forEach((autoVar, idx) => {
+                  if(idx !== r[1].length - 1)
+                    str += (`${autoVar}, `);
+                  else str += (`${autoVar}`);
+                })
+              }
+              defs.forEach(def => {
+                if(def.type !== undefined && def.variable !== undefined)
+                  str += (tab + `${def.type} ${def.variable};\n`);
+              })
             })
             str += (';\n');
           }
