@@ -11,7 +11,8 @@ import {
 } from './gojsHelper';
 import { jsonToCode } from './codegen';
 import { parse } from './model';
-import { Grid } from 'semantic-ui-react';
+import { Container, Grid } from 'semantic-ui-react';
+import { ModelManager } from '@accordproject/concerto-core';
 
 const App = () => {
   const [model, updateModel] = useState([]);
@@ -19,6 +20,8 @@ const App = () => {
   const [codeChange, flipCodeChange] = useState(false);
   const [codegen, changeCodeGen] = useState('Concerto');
   const [firstRender] = useState(null);
+  const [testResult, toggleTestResults] = useState(null);
+  const [testValidation, toggleTestValidation] = useState(null);
 
   // on model change
   const addModelListener = () => {
@@ -100,6 +103,22 @@ const App = () => {
     changeCodeGen(String(evt.value));
   }
 
+  // handle test button click
+  const handleTestClick = () => {
+    try {
+      console.log(code)
+      let m = new ModelManager().addModelFile(code);
+      console.log(m)
+      toggleTestValidation(true);
+      toggleTestResults(`${Object(m)}`);
+    } catch (e) {
+      console.clear();
+      console.log(e.message);
+      toggleTestValidation(false);
+      toggleTestResults(`${e.message}`);
+    }
+  }
+
   useEffect(() => {
     console.clear()
     setupPalette()
@@ -114,7 +133,7 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <NavBar dropDown={handleDropDown} click={handleUpdate} />
+      <NavBar dropDown={handleDropDown} click={handleTestClick} />
       <Grid columns={2}>
         <Grid.Column width={7}>
           <CodeEditor
@@ -133,6 +152,20 @@ const App = () => {
           />
         </Grid.Column>
       </Grid>
+      {testValidation != null && <div
+        style={{
+          backgroundColor: 'red', color: 'white',
+          fontWeight: 'bold', paddingLeft: '20px'
+        }}>
+        {testValidation &&
+          <h3>
+            Valid Concerto Code (as per Accord Project Specs) !
+          </h3>}
+            Check Model Object in console.
+        {!testValidation &&
+          <h3>Invalid Concerto Code (as per Accord Project Specs) !</h3>}
+        {testResult}
+      </div>}
     </React.Fragment>
   );
 }
