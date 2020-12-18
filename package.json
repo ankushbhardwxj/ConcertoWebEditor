@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@accordproject/concerto-core": "^0.82.11",
     "bootstrap": "^4.5.2",
     "gojs": "^2.1.10",
     "gojs-react": "^1.0.5",
