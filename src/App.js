@@ -11,7 +11,7 @@ import {
 } from './gojsHelper';
 import { jsonToCode } from './codegen';
 import { parse } from './model';
-import { Container, Grid } from 'semantic-ui-react';
+import { Container, Grid, Message } from 'semantic-ui-react';
 import { ModelManager } from '@accordproject/concerto-core';
 
 const App = () => {
@@ -152,22 +152,41 @@ const App = () => {
           />
         </Grid.Column>
       </Grid>
-      {testValidation != null && <div
-        style={{
-          backgroundColor: 'red', color: 'white',
-          fontWeight: 'bold', paddingLeft: '20px'
-        }}>
-        {testValidation &&
-          <h3>
-            Valid Concerto Code (as per Accord Project Specs) !
-          </h3>}
-            Check Model Object in console.
-        {!testValidation &&
-          <h3>Invalid Concerto Code (as per Accord Project Specs) !</h3>}
-        {testResult}
-      </div>}
+      {testValidation != null &&
+        <>
+          {testValidation &&
+            <TestResult
+              header="Valid Concerto Code (as per Accord Project Specs) !"
+              message="Check Model Object in console."
+              testResult={testResult}
+              color="green"
+            />
+          }
+          {!testValidation &&
+            <TestResult
+              header="Invalid Concerto Code (as per Accord Project Specs) ! "
+              color="red"
+              testResult={testResult}
+            />
+          }
+        </>
+      }
     </React.Fragment>
   );
+}
+
+const TestResult = props => {
+  const { header, message, color, testResult } = props;
+  return (
+    <Message
+      style={{
+        backgroundColor: color, color: 'white',
+        fontWeight: 'bold', paddingLeft: '20px'
+      }}>
+      <h3>{header}</h3>
+      <p>{message || testResult}</p>
+    </Message>
+  )
 }
 
 export default App;
