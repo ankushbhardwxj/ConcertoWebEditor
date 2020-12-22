@@ -278,7 +278,7 @@ export const setupFlowChartDiagram = (model) => {
     return geo;
   });
 
-  diagram.nodeTemplateMap.add("Comment",
+  diagram.nodeTemplateMap.add("Inputs-Outputs",
     $(go.Node, "Auto", nodeStyle(),
       $(go.Shape, "Rectangle",
         { fill: "#282c34", stroke: "#DEE0A3", strokeWidth: 3 }),
@@ -341,10 +341,10 @@ export const setupFlowChartDiagram = (model) => {
   diagram.model = $(go.GraphLinksModel, {
     linkFromPortIdProperty: "fromPort",
     linkToPortIdProperty: "toPort",
-    nodeDataArray: [
-    ],
-    linkDataArray: [
-    ],
+    nodeDataArray: model,
+    linkDataArray: model,
+    copiesArrays: true,
+    copiesArrayObjects: true,
   })
 }
 
@@ -369,7 +369,7 @@ export const setupFlowChartPalette = () => {
       { category: "Statement", text: "Step" },
       { category: "Conditional", text: "condition" },
       { category: "End", text: "End" },
-      { category: "Comment", text: "I/O" }
+      { category: "Inputs-Outputs", text: "I/O" }
     ])
   })
 }

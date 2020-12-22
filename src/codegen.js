@@ -2,8 +2,8 @@ export const jsonToCode = (json) => {
   let code = "";
   let nodeData = [];
   let linkData = [];
-  //console.clear();
-  //console.log(json)
+  // namespace of the model
+  code += "namespace model\n\n";
 
   if (json.length > 0) {
     json.forEach(obj => {
