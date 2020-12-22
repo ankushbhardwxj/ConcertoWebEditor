@@ -10,6 +10,7 @@ import {
   setupUMLDiagram
 } from './gojsHelper';
 import {parseInputOutputDeclare, parseConditionalStr} from './cppHelper';
+import axios from 'axios';
 
 const Cpp = props => {
   const [model, updateModel] = useState([]);
@@ -69,6 +70,7 @@ const Cpp = props => {
           <Highlight language={'C++'}>
             {code}
           </Highlight>
+        <InputOutputBox source={code}/>
         </Grid.Column>
         <Grid.Column width={8}>
           <Diagram
@@ -80,12 +82,37 @@ const Cpp = props => {
           />
         </Grid.Column>
       </Grid>
-      <InputOutputBox />
     </React.Fragment>
   )
 }
 
 const InputOutputBox = props => {
+  const [inputs, changeInputs] = useState('');
+  const [outputs, changeOutputs] = useState('');
+  const convertToBase64 = (code) => {
+    let buff = new Buffer(code);
+    let base64code = buff.toString('base64');
+    return base64code;
+  }
+  const handleClick = () => {
+    axios({
+      method: 'POST',
+      url: 'http://localhost:3000/run/anking',
+      data: {
+        input: inputs,
+        lang: 'cpp',
+        source: convertToBase64(props.source)
+      }
+    }).then(r => {
+      console.log('Inputs sent to server')
+      changeOutputs(r.data.stdout);
+    })
+    .catch(err => console.log('Error' + err))
+  }
+
+  const output = (outputs != '') ? <Segment>{outputs}</Segment> : 
+       <Segment>Outputs from program</Segment>  
+
   return (
     <React.Fragment>
       <Form>
@@ -94,12 +121,14 @@ const InputOutputBox = props => {
               <h4>Input</h4> 
             </Grid.Column>
             <Grid.Column>
-              <Button secondary>Compile</Button> 
+              <Button secondary onClick={handleClick}>Compile</Button> 
             </Grid.Column>
           </Grid>
-        <TextArea placeholder='Enter inputs'/>
+        <TextArea 
+          onChange={(e) => changeInputs(e.target.value)}
+          placeholder='Enter inputs'/>
           <h4>Output</h4>
-        <Segment>Outputs from program</Segment>
+          {output} 
       </Form>
     </React.Fragment>
   )

@@ -7,14 +7,6 @@ router.post('/:user', async (req, res, next) => {
   // convert base64 to ascii
   let code = new Buffer(source, 'base64');
   code = code.toString('ascii');
-  code = `#include<iostream>
-    using namespace std;
-    int main() {
-      string s; cin>>s;
-      string p; cin>>p;
-      cout << s << endl;
-      cout << p << endl;
-    }`
   // compile this code and get outputs
   const compiler = 'g++';
   const out = '-o'
