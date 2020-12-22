@@ -8,7 +8,7 @@
     "bootstrap": "^4.5.2",
     "gojs": "^2.1.10",
     "gojs-react": "^1.0.5",
-    "highlight.js": "^10.4.0",
+    "highlight.js": "^10.4.1",
     "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "react": "^16.12.0",
